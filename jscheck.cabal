@@ -1,0 +1,12 @@
+Name:           jscheck
+Version:        0.0
+Description:    Limited static type checking for javascript
+Author:         Tim Disney and Huascar Sanchez
+Maintainer:     tim.disney@gmail.com
+Build-Type:     Simple
+Cabal-Version:  >= 1.2
+
+Executable jscheck
+  Main-is:          Jscheck.hs
+  hs-source-dirs:   src
+  Build-Depends:    base >= 3, parsec
