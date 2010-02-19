@@ -1,12 +1,47 @@
 Name:           jscheck
-Version:        0.0
+Version:        0.1
 Description:    Limited static type checking for javascript
 Author:         Tim Disney and Huascar Sanchez
 Maintainer:     tim.disney@gmail.com
 Build-Type:     Simple
 Cabal-Version:  >= 1.2
 
+Library
+  Hs-source-dirs: src
+  Exposed-Modules: HJS.Interpreter.Array
+                   HJS.Interpreter.String,
+                   HJS.Interpreter.Error,
+                   HJS.Interpreter.Debugger,
+                   HJS.Interpreter.Printf,
+                   HJS.Interpreter.ObjectBasic,
+                   HJS.Interpreter.Interp,
+                   HJS.Interpreter.VarArgs,
+                   HJS.Interpreter.InterpMDecl,
+                   HJS.Interpreter.Regex,
+                   HJS.Interpreter.Function,
+                   HJS.Interpreter.Host,
+                   HJS.Interpreter.Object,
+                   HJS.Interpreter.InterpM,
+                   HJS.Interpreter.Eval,
+                   HJS.Interpreter,
+                   HJS.Parser.Prim,
+                   HJS.Parser.Utils,
+                   HJS.Parser.JavaScript,
+                   HJS.Parser.Lexer,
+                   HJS.Parser.JavaScriptParser,
+                   HJS.Parser
+  Build-Depends: base>=3, parsec>=2.0, mtl, regex-compat>=0.71, containers,
+                 array, directory, bytestring
+  Extensions:     OverlappingInstances, PatternSignatures, MultiParamTypeClasses,
+                  FlexibleInstances, TypeSynonymInstances, UndecidableInstances
+  GHC-Options:    -Wall
+
+
 Executable jscheck
   Main-is:          Jscheck.hs
   hs-source-dirs:   src
-  Build-Depends:    base >= 3, parsec
+  Build-Depends: base>=3, parsec>=2.0, mtl, regex-compat>=0.71, containers,
+                 array, directory, bytestring
+  Extensions:     OverlappingInstances, PatternSignatures, MultiParamTypeClasses,
+                  FlexibleInstances, TypeSynonymInstances, UndecidableInstances
+  GHC-Options:    -Wall

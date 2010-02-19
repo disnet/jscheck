@@ -1,11 +1,10 @@
 import Text.ParserCombinators.Parsec
 
-simple :: Parser Char
-simple = letter
+{-
+csvFile = endBy line eol
+line = sepBy cell (char ',')
+cell = many (noneOf ",\n")
+eol = char '\n'
 
-run :: Show a => Parser a -> String -> IO ()
-run p input 
-  = case (parse p "" input) of
-    Left err -> do {putStr "parse error at "; print err}
-    Right x -> print x
-  
+parseCSV :: String -> Either ParseError [[String]]
+parseCSV input = parse csvFile "(unknown)" input-}
