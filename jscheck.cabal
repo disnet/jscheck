@@ -34,11 +34,22 @@ Library
                  array, directory, bytestring
   Extensions:     OverlappingInstances, PatternSignatures, MultiParamTypeClasses,
                   FlexibleInstances, TypeSynonymInstances, UndecidableInstances
-  GHC-Options:    -Wall
 
+Flag Tests
+  Description:  Builds the tests
+  Default:      True
+
+Executable test-jscheck
+  Main-is:          Test.hs 
+  hs-source-dirs:   src, test   
+  Build-Depends:    test-framework, test-framework-hunit, HUnit >=1.2
 
 Executable jscheck
   Main-is:          Main.hs
   hs-source-dirs:   src
-  Build-Depends: base>=3
-  GHC-Options:    -Wall
+  Build-Depends:    base>=3
+  GHC-Options:      -Wall
+  
+  if !flag(tests)
+    Buildable:      False
+

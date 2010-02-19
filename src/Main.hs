@@ -1,9 +1,7 @@
 import System.Environment
-import HJS.Parser
+import Checker
 
 
--- | 'main' runs the main program
+-- takes a programm in as the first command line arguemnt and runs the checker
 main :: IO ()
-main = do
-  print (parseProgram "@foo function bar(a) { return 0; }")
-
+main = getArgs >>= print . checkProgram . head
