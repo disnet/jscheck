@@ -40,8 +40,5 @@ Library
 Executable jscheck
   Main-is:          Jscheck.hs
   hs-source-dirs:   src
-  Build-Depends: base>=3, parsec>=2.0, mtl, regex-compat>=0.71, containers,
-                 array, directory, bytestring
-  Extensions:     OverlappingInstances, PatternSignatures, MultiParamTypeClasses,
-                  FlexibleInstances, TypeSynonymInstances, UndecidableInstances
+  Build-Depends: base>=3
   GHC-Options:    -Wall
