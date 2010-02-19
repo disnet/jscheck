@@ -38,7 +38,7 @@ Library
 
 
 Executable jscheck
-  Main-is:          Jscheck.hs
+  Main-is:          Main.hs
   hs-source-dirs:   src
   Build-Depends: base>=3
   GHC-Options:    -Wall
