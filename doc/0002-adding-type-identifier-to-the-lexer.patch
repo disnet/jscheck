@@ -1,0 +1,70 @@
+From 350ddb926ede74569db385f094ce251d97f9a29f Mon Sep 17 00:00:00 2001
+From: disnet <tim.disney@gmail.com>
+Date: Thu, 18 Feb 2010 22:04:43 -0800
+Subject: [PATCH 2/3] adding type identifier to the lexer
+
+---
+ src/HJS/Parser/Lexer.hs |    5 ++++-
+ src/HJS/Parser/Prim.hs  |    6 +++++-
+ 2 files changed, 9 insertions(+), 2 deletions(-)
+
+diff --git a/src/HJS/Parser/Lexer.hs b/src/HJS/Parser/Lexer.hs
+index f4c4ddc..ad79ec2 100755
+--- a/src/HJS/Parser/Lexer.hs
++++ b/src/HJS/Parser/Lexer.hs
+@@ -92,6 +92,7 @@ data Token
+         TokenWhite  
+       | TokenInt Int
+       | TokenIdent String
++      | TokenTypeIdent String
+       | TokenStringLit String
+       | TokenNL
+       | TokenRegex (String,String)
+@@ -125,6 +126,7 @@ resId = do { x <- many1 identChar; if (elem x $ P.reservedNames javaScriptStyle)
+ resOp = do { x <- oper; return x  }
+ 
+ identChar = satisfy (\c -> isAlphaNum c || c == '_')
++typeIdentChar = satisfy (\c -> isAlphaNum c || c == '_' || c == '@') --TODO: note that this is probably breaking js in a subtle way
+ 
+ atoken = 
+          try (do { x <- many1 digit; return $ TokenInt $ read x })
+@@ -132,6 +134,7 @@ atoken =
+      <|> try (do { s <- regex; return $ TokenRegex s })
+      <|> try (do { x <- resOp; return $ TokenROP x } )
+      <|> try (do { cs <- many1 identChar ; return $ TokenIdent (cs)})
++     <|> try (do { cs <- many1 typeIdentChar ; return $ TokenTypeIdent (cs)})
+ 
+ 
+      <|> try (do { char '\n'; return TokenNL }) 
+@@ -165,4 +168,4 @@ lexFile flags name = do
+                             input <- readFile name
+ 		            putStrLn $ show $ lexProgram input
+ 
+-lexProgram input = runLexer $ processComments input
+\ No newline at end of file
++lexProgram input = runLexer $ processComments input
+diff --git a/src/HJS/Parser/Prim.hs b/src/HJS/Parser/Prim.hs
+index 990df43..990a49c 100755
+--- a/src/HJS/Parser/Prim.hs
++++ b/src/HJS/Parser/Prim.hs
+@@ -58,6 +58,10 @@ identifier :: JSParser String
+ identifier = lexeme $ mytoken (\tok -> case tok of 
+                               TokenIdent name -> Just name
+                               other -> Nothing)
++typeIdentifier :: JSParser String
++typeIdentifier = lexeme $ mytoken (\tok -> case tok of
++                                  TokenTypeIdent name -> Just name
++                                  other -> Nothing)
+ 
+ -- Binary operators are allowed to be followed by whitespace with NL.
+ rOp :: String -> JSParser () 
+@@ -112,4 +116,4 @@ nlBefore t ((_,TokenWhite):ts) flag = nlBefore t ts flag
+ nlBefore t (t':ts) flag = if t' == t then flag else nlBefore t ts False
+ nlBefore t [] flag = False
+ 
+-t2 = nlBefore ((newPos "" 2 1),TokenROP "+") (runLexer "1\n2+2") False
+\ No newline at end of file
++t2 = nlBefore ((newPos "" 2 1),TokenROP "+") (runLexer "1\n2+2") False
+-- 
+1.6.5.2
+
