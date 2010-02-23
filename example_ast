@@ -1,0 +1,11 @@
+[Stmt 
+  (StmtPos (1,1) 
+    (ExprStmt 
+      (AssignE 
+        (Assign 
+          (CallExpr 
+            (CallPrim 
+              (MemberCall 
+                (MemberCall (MemPrimExpr (Ident "Foo")) "prototype") 
+                "bar")))
+          AssignNormal (CondE (AExpr (AEUExpr (PostFix (LeftExpr (CallExpr (CallPrim (MemPrimExpr (PEFuncDecl (FuncDecl (Just "") (Just "") ["a"] [Stmt (StmtPos (1,35) (ReturnStmt (Just (AssignE (CondE (AExpr (AEUExpr (PostFix (LeftExpr (CallExpr (CallPrim (MemPrimExpr (Literal (LitInt 0))))))))))))))]))))))))))))))]
