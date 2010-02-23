@@ -1,8 +1,11 @@
 import Test.Framework(defaultMain, testGroup)
+import HJS.Parser
 import Test.Framework.Providers.HUnit
 import Checker
+import Extractor
 import HJS.Parser.JavaScript
 import Test.HUnit
+
 
 -- bad example for unit test but it illustrates a way to walk the AST
 class CheckC t where
@@ -27,7 +30,8 @@ main = defaultMain tests
 
 tests = [
         testGroup "Basic Tests" [
-          testCase "simple" test_simple
+          testCase "simple" test_simple,
+          testCase "extractor" test_extractor
         ]
     ]
 
@@ -36,3 +40,6 @@ test_simple = do case checkProgram "var x;" of
                   Right (r:rs) -> check r
                   Left l -> assertFailure ("parse error: " ++ (show l))
 
+test_extractor = case parseProgram "Foo.prototype.bar = function(a) {return 0;};" of
+                  Right r -> assertEqual "unknown type" (runExtractor r) ["foo"]
+                  Left l -> assertFailure "could not parse"
