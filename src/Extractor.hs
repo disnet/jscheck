@@ -2,8 +2,12 @@ module Extractor where
 import HJS.Parser
 import HJS.Parser.JavaScript
 
+data XType = XType { typeName :: String
+                   , typeFields :: [String]
+                   } deriving (Show, Eq)
+
 class ExtractC t where
-  extract :: t -> [String]
+  extract :: t -> [XType]
 
 instance ExtractC SourceElement where
   extract (Stmt s) = extract s
@@ -16,7 +20,7 @@ instance ExtractC MemberExpr where
 --  extract (MemberNew me e) = []
   extract (MemberCall me e) = case me of
                                 MemberCall me "prototype" -> case me of
-                                    MemPrimExpr (Ident s) -> [s ++ ":" ++ e]
+                                    MemPrimExpr (Ident s) -> [XType {typeName=s, typeFields=[e]}]
                                     _ -> []
                                 _ -> []
 
@@ -56,7 +60,7 @@ instance ExtractC Stmt' where
 --  extract (Switch e s) = extract s
 
 
-runExtractor :: [SourceElement] -> [String]
+runExtractor :: [SourceElement] -> [XType]
 runExtractor (x:xs) = (extract x) ++ (runExtractor xs)
 runExtractor _ = []
 

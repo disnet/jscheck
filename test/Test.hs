@@ -26,6 +26,7 @@ instance CheckC VarDecl where
   check (VarDecl s (Just e)) = assertBool "do nothing" True
   check (VarDecl s Nothing)  = assertEqual "var should be 'x'" s "x"
 
+
 main = defaultMain tests
 
 tests = [
@@ -41,5 +42,10 @@ test_simple = do case checkProgram "var x;" of
                   Left l -> assertFailure ("parse error: " ++ (show l))
 
 test_extractor = case parseProgram "Foo.prototype.bar = function(a) {return 0;};" of
-                  Right r -> assertEqual "unknown type" (runExtractor r) ["foo"]
+                  Right r -> do xtype <- runExtractor r
+                                assertEqual "unknown type" "foo" (typeName xtype)
+                                assertFailure "bleh"
                   Left l -> assertFailure "could not parse"
+
+
+
