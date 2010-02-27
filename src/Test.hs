@@ -32,21 +32,23 @@ main = defaultMain tests
 tests = [
         testGroup "Basic Tests" [
           testCase "simple" test_simple,
-          testCase "extractor" test_extractor
+          testCase "extractor"  test_extractor
         ]
     ]
 
--- Right [Stmt (StmtPos (1,1) (VarStmt [VarDecl "x" Nothing])),Stmt (StmtPos (1,6) EmptyStmt)]
-test_simple = do case checkProgram "var x;" of
-                  Right (r:rs) -> check r
-                  Left l -> assertFailure ("parse error: " ++ (show l))
+parse_fail ::  [Char] -> ([SourceElement] -> Assertion) -> Assertion
+parse_fail p f = case parseProgram p of
+                      Right r -> f r
+                      Left l -> assertFailure $ "Parse error: " ++ (show l)
 
-test_extractor = case parseProgram "Foo.prototype.bar = function(a) {return 0;};" of
-                  Right r -> let xtype = head (runExtractor r) in
-                                do 
-                                  assertEqual "unknown type" "Foo" (typeName xtype)
-                                  assertEqual "unknown type" "bar" (head (typeFields xtype))
-                  Left l -> assertFailure "could not parse"
+-- Right [Stmt (StmtPos (1,1) (VarStmt [VarDecl "x" Nothing])),Stmt (StmtPos (1,6) EmptyStmt)]
+test_simple = parse_fail "var x;" (\p -> check (head p))
+
+test_extractor = parse_fail "Foo.prototype.bar = function(a) {return 0;};" (\p ->
+                  let xtype = head (runExtractor p) in
+                      do 
+                        assertEqual "unknown type" "Foo" (typeName xtype)
+                        assertEqual "unknown type" "bar" (head (typeFields xtype)))
 
 
 
