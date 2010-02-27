@@ -6,35 +6,6 @@ Maintainer:     tim.disney@gmail.com
 Build-Type:     Simple
 Cabal-Version:  >= 1.2
 
-Library
-  Hs-source-dirs: src
-  Exposed-Modules: HJS.Interpreter.Array
-                   HJS.Interpreter.String,
-                   HJS.Interpreter.Error,
-                   HJS.Interpreter.Debugger,
-                   HJS.Interpreter.Printf,
-                   HJS.Interpreter.ObjectBasic,
-                   HJS.Interpreter.Interp,
-                   HJS.Interpreter.VarArgs,
-                   HJS.Interpreter.InterpMDecl,
-                   HJS.Interpreter.Regex,
-                   HJS.Interpreter.Function,
-                   HJS.Interpreter.Host,
-                   HJS.Interpreter.Object,
-                   HJS.Interpreter.InterpM,
-                   HJS.Interpreter.Eval,
-                   HJS.Interpreter,
-                   HJS.Parser.Prim,
-                   HJS.Parser.Utils,
-                   HJS.Parser.JavaScript,
-                   HJS.Parser.Lexer,
-                   HJS.Parser.JavaScriptParser,
-                   HJS.Parser
-  Build-Depends: base>=3, parsec>=2.0, mtl, regex-compat>=0.71, containers,
-                 array, directory, bytestring
-  Extensions:     OverlappingInstances, PatternSignatures, MultiParamTypeClasses,
-                  FlexibleInstances, TypeSynonymInstances, UndecidableInstances
-
 Flag Tests
   Description:  Builds the tests
   Default:      True
@@ -42,14 +13,13 @@ Flag Tests
 Executable test-jscheck
   Main-is:          Test.hs 
   hs-source-dirs:   src, test   
-  Build-Depends:    test-framework, test-framework-hunit, HUnit >=1.2
+  Build-Depends:    parsec>=2.0,test-framework, test-framework-hunit, HUnit >=1.2
 
 Executable jscheck
   Main-is:          Main.hs
   hs-source-dirs:   src
-  Build-Depends:    base>=3
+  Build-Depends:    base>=3, parsec>=2.0, mtl, regex-compat>=0.71, containers, 
+                    array, directory, bytestring
   GHC-Options:      -Wall
-  
-  if !flag(tests)
-    Buildable:      False
-
+  Extensions:       OverlappingInstances, PatternSignatures, MultiParamTypeClasses,
+                    FlexibleInstances, TypeSynonymInstances, UndecidableInstances
