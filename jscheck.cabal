@@ -12,7 +12,7 @@ Flag Tests
 
 Executable test-jscheck
   Main-is:          Test.hs 
-  hs-source-dirs:   src, test   
+  hs-source-dirs:   src
   Build-Depends:    parsec>=2.0,test-framework, test-framework-hunit, HUnit >=1.2
 
 Executable jscheck
