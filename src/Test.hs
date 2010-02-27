@@ -42,9 +42,10 @@ test_simple = do case checkProgram "var x;" of
                   Left l -> assertFailure ("parse error: " ++ (show l))
 
 test_extractor = case parseProgram "Foo.prototype.bar = function(a) {return 0;};" of
-                  Right r -> do xtype <- runExtractor r
-                                assertEqual "unknown type" "foo" (typeName xtype)
-                                assertFailure "bleh"
+                  Right r -> let xtype = runExtractor r in
+                                do 
+                                  assertEqual "unknown type" "Foo" (typeName (head xtype))
+                                  assertEqual "unknown type" "Foo" (typeName (head xtype))
                   Left l -> assertFailure "could not parse"
 
 
