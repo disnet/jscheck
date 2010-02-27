@@ -3,8 +3,7 @@ import HJS.Parser
 import HJS.Parser.JavaScript
 
 data XType = XType { typeName :: String
-                   , typeFields :: [String]
-                   } deriving (Show, Eq)
+                   , typeFields :: [String] } deriving (Show, Eq)
 
 class ExtractC t where
   extract :: t -> [XType]
@@ -18,11 +17,12 @@ instance ExtractC MemberExpr where
 --  extract (MemPrimExpr p) = extract p
 --  extract (ArrayExpr me e) = []
 --  extract (MemberNew me e) = []
-  extract (MemberCall me e) = case me of
-                                MemberCall me "prototype" -> case me of
-                                    MemPrimExpr (Ident s) -> [XType {typeName=s, typeFields=[e]}]
-                                    _ -> []
-                                _ -> []
+  extract (MemberCall me e) = 
+    case me of
+      MemberCall me "prototype" -> case me of
+          MemPrimExpr (Ident s) -> [XType {typeName=s, typeFields=[e]}]
+          _ -> []
+      _ -> []
 
 instance ExtractC Stmt where
   extract (StmtPos p s) = extract s

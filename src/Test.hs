@@ -32,7 +32,8 @@ main = defaultMain tests
 tests = [
         testGroup "Basic Tests" [
           testCase "simple" test_simple,
-          testCase "extractor"  test_extractor
+          testCase "extractor"  extract_single_method,
+          testCase "extractor with two methods" extract_two_methods
         ]
     ]
 
@@ -44,11 +45,19 @@ parse_fail p f = case parseProgram p of
 -- Right [Stmt (StmtPos (1,1) (VarStmt [VarDecl "x" Nothing])),Stmt (StmtPos (1,6) EmptyStmt)]
 test_simple = parse_fail "var x;" (\p -> check (head p))
 
-test_extractor = parse_fail "Foo.prototype.bar = function(a) {return 0;};" (\p ->
-                  let xtype = head (runExtractor p) in
-                      do 
-                        assertEqual "unknown type" "Foo" (typeName xtype)
-                        assertEqual "unknown type" "bar" (head (typeFields xtype)))
+extract_single_method = parse_fail "Foo.prototype.bar = function(a) {return 0;};" (\p ->
+    let xtype = head (runExtractor p) in
+        do 
+          assertEqual "unknown type" "Foo" (typeName xtype)
+          assertEqual "unknown field" "bar" (head (typeFields xtype)))
 
 
+extract_two_methods = parse_fail prog (\p ->
+    let xtype = head (runExtractor p) in
+        do
+          assertEqual "unkown type" "Foo" (typeName xtype)
+          assertEqual "unkown type field" "bar" (head (typeFields xtype))
+          assertEqual "unkown type field" "baz" (head (tail (typeFields xtype))))
+  where prog = "Foo.prototype.bar = function(a) {return 0;}; Foo.prototype.baz = function() {};"
+    
 
