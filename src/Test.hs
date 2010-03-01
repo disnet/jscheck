@@ -67,7 +67,10 @@ extract_two_methods = parse_fail prog (\p ->
 extract_dog_file = do
   s <- readFile "testfiles/two_methods_and_caller.js"
   parse_fail s (\p -> let xtype = head (runExtractor p) in
-                        assertEqual "testing" "asldkj" (typeName xtype))
+                  do
+                    assertEqual "there should have been a dog type" "Dog" (typeName xtype)
+                    assertEqual "should have only had two fields" 2 (length (typeFields xtype))
+                    assertBool "has different fields than expected" ((typeFields xtype) \\ ["getName", "bark"] == []))
 
     
 extract_two_methods_with_extra_stmts = parse_fail prog (\p ->

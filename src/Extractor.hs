@@ -1,6 +1,3 @@
-{-# OPTIONS -fglasgow-exts #-}
-{-# OPTIONS -fallow-overlapping-instances  #-}
-{-# OPTIONS -fallow-incoherent-instances #-}
 module Extractor where
 import HJS.Parser
 import HJS.Parser.JavaScript
