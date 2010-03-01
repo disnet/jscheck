@@ -35,3 +35,28 @@
                             (PEFuncDecl (FuncDecl (Just "") (Just "") ["a"] [Stmt (StmtPos (1,34) (ReturnStmt (Just (AssignE (CondE (AExpr (AEUExpr (PostFix (LeftExpr (CallExpr (CallPrim (MemPrimExpr (Literal (LitInt 0))))))))))))))])))))))))))))),
 
 Stmt (StmtPos (1,46) (ExprStmt (AssignE (Assign (CallExpr (CallPrim (MemberCall (MemberCall (MemPrimExpr (Ident "Foo")) "prototype") "baz"))) AssignNormal (CondE (AExpr (AEUExpr (PostFix (LeftExpr (CallExpr (CallPrim (MemPrimExpr (PEFuncDecl (FuncDecl (Just "") (Just "") [] []))))))))))))))]
+
+
+
+
+[Stmt (StmtPos (1,1) (ExprStmt 
+
+
+(AssignE (CondE (AExpr (AEUExpr (PostFix (LeftExpr (CallExpr (CallPrim (MemPrimExpr (PEFuncDecl (FuncDecl (Just "Dog") (Just "") ["name"] [Stmt (StmtPos (2,3) (ExprStmt 
+
+
+(AssignE (Assign (CallExpr (CallPrim (MemberCall (MemPrimExpr This) "name"))) AssignNormal (CondE (AExpr (AEUExpr (PostFix (LeftExpr (CallExpr (CallPrim (MemPrimExpr (Ident "name")))))))))))))]))))))))))))),Stmt (StmtPos (5,4) (ExprStmt 
+
+(AssignE (Assign (CallExpr (CallPrim (MemberCall (MemberCall (MemPrimExpr (Ident "Dog")) "prototype") "getName"))) AssignNormal (CondE (AExpr (AEUExpr (PostFix (LeftExpr (CallExpr (CallPrim (MemPrimExpr (PEFuncDecl (FuncDecl (Just "") (Just "") [] [Stmt (StmtPos (6,3) (ReturnStmt (Just
+
+(AssignE (CondE (AExpr (AEUExpr (PostFix (LeftExpr (CallExpr (CallPrim (MemberCall (MemPrimExpr This) "name"))))))))))))])))))))))))))),Stmt (StmtPos (9,4) (ExprStmt 
+
+(AssignE (Assign (CallExpr (CallPrim (MemberCall (MemberCall (MemPrimExpr (Ident "Dog")) "prototype") "bark"))) AssignNormal (CondE (AExpr (AEUExpr (PostFix (LeftExpr (CallExpr (CallPrim (MemPrimExpr (PEFuncDecl (FuncDecl (Just "") (Just "") [] [Stmt (StmtPos (10,3) (ReturnStmt (Just 
+
+(AssignE (CondE (AExpr (AEUExpr (PostFix (LeftExpr (CallExpr (CallPrim (MemPrimExpr (Literal (LitString "Arf!"))))))))))))))])))))))))))))),Stmt (StmtPos (14,9) (ExprStmt 
+
+(AssignE (CondE (AExpr (AEUExpr (PostFix (LeftExpr (CallExpr (CallPrim (MemPrimExpr (PEFuncDecl (FuncDecl (Just "getSaying") (Just "") ["dog"] [Stmt (StmtPos (15,3) (ReturnStmt (Just 
+
+(AssignE (CondE (AExpr (AOp "+" (AOp "+" (AEUExpr (PostFix (LeftExpr (CallExpr (CallMember (MemberCall (MemPrimExpr (Ident "dog")) "getName") []))))) (AEUExpr (PostFix (LeftExpr (CallExpr (CallPrim (MemPrimExpr (Literal (LitString ":"))))))))) (AEUExpr (PostFix (LeftExpr (CallExpr (CallMember (MemberCall (MemPrimExpr (Ident "dog")) "bark") []))))))))))))]))))))))))))),Stmt (StmtPos (18,4) (VarStmt [VarDecl "mydog" (Just (CondE (AExpr (AEUExpr (PostFix (LeftExpr (CallExpr (CallPrim (MemberNew (MemPrimExpr (Ident "Dog")) [CondE (AExpr (AEUExpr (PostFix (LeftExpr (CallExpr (CallPrim (MemPrimExpr (Literal (LitString "Spot")))))))))])))))))))])),Stmt (StmtPos (18,28) EmptyStmt),Stmt (StmtPos (19,1) (ExprStmt 
+
+(AssignE (CondE (AExpr (AEUExpr (PostFix (LeftExpr (CallExpr (CallMember (MemPrimExpr (Ident "getSaying")) [CondE (AExpr (AEUExpr (PostFix (LeftExpr (CallExpr (CallPrim (MemPrimExpr (Ident "mydog"))))))))]))))))))))]

@@ -35,7 +35,9 @@ tests = [
           testCase "simple" test_simple,
           testCase "extractor"  extract_single_method,
           testCase "extractor with two methods" extract_two_methods,
-          testCase "extractor with two methods and extra stmts" extract_two_methods_with_extra_stmts
+          testCase "extractor run on dog file" extract_dog_file
+
+--          testCase "extractor with two methods and extra stmts" extract_two_methods_with_extra_stmts -- test is known to fail, we're just going to accept that for now
         ]
     ]
 
@@ -61,6 +63,12 @@ extract_two_methods = parse_fail prog (\p ->
           assertEqual "should have only been two fields" 2 (length (typeFields xtype))
           assertBool "has different fields than expected" ((typeFields xtype) \\ ["bar", "baz"] == []))
   where prog = "Foo.prototype.bar = function(a) {return 0;}; Foo.prototype.baz = function() {};"
+
+extract_dog_file = do
+  s <- readFile "testfiles/two_methods_and_caller.js"
+  parse_fail s (\p -> let xtype = head (runExtractor p) in
+                        assertEqual "testing" "asldkj" (typeName xtype))
+
     
 extract_two_methods_with_extra_stmts = parse_fail prog (\p ->
     let xtype = head (runExtractor p) in

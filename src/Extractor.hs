@@ -1,3 +1,6 @@
+{-# OPTIONS -fglasgow-exts #-}
+{-# OPTIONS -fallow-overlapping-instances  #-}
+{-# OPTIONS -fallow-incoherent-instances #-}
 module Extractor where
 import HJS.Parser
 import HJS.Parser.JavaScript
@@ -46,8 +49,9 @@ instance ExtractC Expr where
 instance ExtractC AssignE where
   extract (Assign left AssignNormal right) c = (extract left c) ++ (extract right c)
   extract (Assign left op right) c = (extract left c) ++ (extract right c)
-  extract _ _ = []
-
+  -- TODO: these will need to change
+  extract (CondE p) c = c
+  extract (AEFuncDecl fd) c = c
 
 
 instance ExtractC LeftExpr where
@@ -59,18 +63,18 @@ instance ExtractC CallExpr where
 
 instance ExtractC Stmt' where
   extract (ExprStmt p) c = extract p c
---  extract (IfStmt p) = extract p
---  extract (Block xs) = extract xs
---  extract (ItStmt p) = extract p
---  extract (ReturnStmt (Just p)) = extract p
---  extract (ReturnStmt Nothing) = []
---  extract (BreakStmt s) = extract s
---  extract (ContStmt s) = extract s
---  extract (EmptyStmt) = []
---  extract (VarStmt v) = extract v
---  extract (ThrowExpr e) = extract e
---  extract (TryStmt e) = extract e
---  extract (Switch e s) = extract s
+  extract (IfStmt p) c = c
+  extract (Block xs) c = c
+  extract (ItStmt p) c = c
+  extract (ReturnStmt (Just p)) c = c
+  extract (ReturnStmt Nothing) c = c
+  extract (BreakStmt s) c = c
+  extract (ContStmt s) c = c
+  extract (EmptyStmt) c = c
+  extract (VarStmt v) c = c
+  extract (ThrowExpr e) c = c
+  extract (TryStmt e) c = c
+  extract (Switch e s) c = c
 
 
 runExtractor :: [SourceElement] -> [XType]
