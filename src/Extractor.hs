@@ -32,9 +32,9 @@ insert_xtype xtype current_list =
       if (typeName oldtype) == new_name 
         then XType {typeName=new_name, typeFields=(typeFields oldtype) ++ (new_fields)}
         else oldtype) current_list
-      else current_list ++ [xtype]
-    where new_name = (typeName xtype) 
-          new_fields = (typeFields xtype)
+    else current_list ++ [xtype]
+  where new_name = (typeName xtype) 
+        new_fields = (typeFields xtype)
 
 
 instance ExtractC Stmt where
@@ -74,6 +74,6 @@ instance ExtractC Stmt' where
 
 
 runExtractor :: [SourceElement] -> [XType]
-runExtractor (x:xs) = (extract x []) ++ (runExtractor xs)
-runExtractor _ = []
+runExtractor (x:[]) = extract x []
+runExtractor (x:xs) = (extract x (runExtractor xs))
 

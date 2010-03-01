@@ -5,6 +5,7 @@ import Checker
 import Extractor
 import HJS.Parser.JavaScript
 import Test.HUnit
+import Data.List
 
 
 -- bad example for unit test but it illustrates a way to walk the AST
@@ -33,7 +34,8 @@ tests = [
         testGroup "Basic Tests" [
           testCase "simple" test_simple,
           testCase "extractor"  extract_single_method,
-          testCase "extractor with two methods" extract_two_methods
+          testCase "extractor with two methods" extract_two_methods,
+          testCase "extractor with two methods and extra stmts" extract_two_methods_with_extra_stmts
         ]
     ]
 
@@ -56,8 +58,15 @@ extract_two_methods = parse_fail prog (\p ->
     let xtype = head (runExtractor p) in
         do
           assertEqual "unkown type" "Foo" (typeName xtype)
-          assertEqual "unkown type field" "bar" (head (typeFields xtype))
-          assertEqual "unkown type field" "baz" (head (tail (typeFields xtype))))
+          assertEqual "should have only been two fields" 2 (length (typeFields xtype))
+          assertBool "has different fields than expected" ((typeFields xtype) \\ ["bar", "baz"] == []))
   where prog = "Foo.prototype.bar = function(a) {return 0;}; Foo.prototype.baz = function() {};"
     
+extract_two_methods_with_extra_stmts = parse_fail prog (\p ->
+    let xtype = head (runExtractor p) in
+        do
+          assertEqual "unkown type" "Foo" (typeName xtype)
+          assertEqual "should have only been two fields" 2 (length (typeFields xtype))
+          assertBool "has different fields than expected" ((typeFields xtype) \\ ["bar", "baz"] == []))
+  where prog = "Foo.prototype.bar = function(a) {return 0;}; function extra(a,b) {}; Foo.prototype.baz = function() {};"
 
