@@ -37,7 +37,7 @@ tests = [
           testCase "extractor with two methods" extract_two_methods,
           testCase "extractor run on dog file" extract_dog_file
 
---          testCase "extractor with two methods and extra stmts" extract_two_methods_with_extra_stmts -- test is known to fail, we're just going to accept that for now
+--          testCase "extractor with two methods and extra stmts" extract_two_methods_with_extra_stmts -- TODO: test is known to fail, we're just going to accept that for now
         ]
     ]
 
