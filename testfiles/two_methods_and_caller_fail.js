@@ -12,7 +12,7 @@ Dog.prototype.bark = function() {
 
 //# @type Dog dog
 function getSaying(dog) {
-  return dog.getName() + ":" + dog.bark();
+  return dog.getName() + ":" + dog.meow();
 }
 
 var mydog = new Dog("Spot");

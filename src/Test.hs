@@ -35,7 +35,9 @@ tests = [
           testCase "simple" test_simple,
           testCase "extractor"  extract_single_method,
           testCase "extractor with two methods" extract_two_methods,
-          testCase "extractor run on dog file" extract_dog_file
+          testCase "extractor run on dog file" extract_dog_file,
+          testCase "extractor and checker run on good dog file" extract_check_good_dog_file,
+          testCase "extractor and checker run on bad dog file" extract_check_bad_dog_file
 
 --          testCase "extractor with two methods and extra stmts" extract_two_methods_with_extra_stmts -- TODO: test is known to fail, we're just going to accept that for now
         ]
@@ -81,3 +83,16 @@ extract_two_methods_with_extra_stmts = parse_fail prog (\p ->
           assertBool "has different fields than expected" ((typeFields xtype) \\ ["bar", "baz"] == []))
   where prog = "Foo.prototype.bar = function(a) {return 0;}; function extra(a,b) {}; Foo.prototype.baz = function() {};"
 
+
+extract_check_good_dog_file = do
+  s <- readFile "testfiles/two_methods_and_caller.js"
+  parse_fail s (\p -> if check (head p) (runExtractor p)
+                        then assertBool "passed correctly" True 
+                        else assertFailure "should have passed for known good file")
+    
+extract_check_bad_dog_file = do
+  s <- readFile "testfiles/two_methods_and_caller_fail.js"
+  parse_fail s (\p -> if check (head p) (runExtractor p)
+                        then assertFailure "should have failed the type check" 
+                        else assertBool "passed correctly" True)
+    

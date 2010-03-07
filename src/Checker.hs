@@ -117,5 +117,5 @@ parse_now p f = case parseProgram p of
 -- sample data -- [XType {typeName="a", typeFields=["boo", "arrrg"]}, XType {typeName="b", typeFields=["wal", "tal"]}]
 runChecker input  = parse_now input (\p -> 
         if (check (head p)(runExtractor p))
-        then Good "good stuff"
-        else Warning "bad stuff")
+          then Good "good stuff"
+          else Warning "bad stuff")
