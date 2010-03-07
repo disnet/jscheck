@@ -58,9 +58,9 @@ identifier :: JSParser String
 identifier = lexeme $ mytoken (\tok -> case tok of 
                               TokenIdent name -> Just name
                               other -> Nothing)
-typeIdentifier :: JSParser String
-typeIdentifier = lexeme $ mytoken (\tok -> case tok of
-                                  TokenTypeIdent name -> Just name
+typeID :: String -> JSParser ()
+typeID name = lexeme $ mytoken (\tok -> case tok of
+                                  TokenTypeIdent a | a == name -> Just ()
                                   other -> Nothing)
 
 -- Binary operators are allowed to be followed by whitespace with NL.

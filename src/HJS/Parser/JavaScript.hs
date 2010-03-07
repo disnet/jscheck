@@ -197,8 +197,11 @@ data CaseClause = CaseClause Expr [Stmt] | DefaultClause [Stmt]
 -- data DefaultClause = DefaultClause [Stmt] 
 --		     deriving Show
 
-data FuncDecl = FuncDecl (Maybe String) (Maybe String) [String] [SourceElement]
+data FuncDecl = FuncDecl (Maybe String) [TypeAnnotation] [String] [SourceElement]
 	      deriving Show
+
+data TypeAnnotation = TypeAnnotation String String
+        deriving Show
 
 data SourceElement = Stmt Stmt | SEFuncDecl FuncDecl 
 		   deriving Show

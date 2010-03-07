@@ -173,16 +173,23 @@ funcDecl =
       ; funcDecl2 }
 
 funcDecl2 = do { 
-       typeIdent <- option "" typeIdentifier 
+        annotations <- many typeAnnotations; whiteSpace
       ; rID "function"
-      ;  name <- option "" identifier
+      ; name <- option "" identifier
       ; rOp "("
       ; args <- commaSep identifier
       ; rOp ")"; whiteSpace
       ; rOp "{" ; whiteSpace
       ; se <- many sourceElement
       ; rOp "}"
-      ; return $ FuncDecl (Just name) (Just typeIdent) args se }
+      ; return $ FuncDecl (Just name) annotations args se }
+
+-- functions can have type annotations of the form << @type Dog dog function foo(dog) {} >>
+typeAnnotations = do {
+        typeID "@type"; whiteSpace
+      ; typeName <- identifier; whiteSpace
+      ; argName <- identifier; whiteSpace
+      ; return $ TypeAnnotation typeName argName }
 
 exprStmt = do { r <- expr; autoSemi; whiteSpace; return r } 
 
