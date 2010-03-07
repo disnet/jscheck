@@ -67,7 +67,7 @@ instance CheckC MemberExpr where
                                 _ -> True
   check (MemPrimExpr p) env  = case p of 
                                 PEFuncDecl e -> case e of
-                                     FuncDecl (Just a1) (Just a2) v y -> statementCheck v y env
+                                     FuncDecl (Just a1) a2 v y -> statementCheck v y env
                                      _ -> True
                                 _ -> True
                                                   
