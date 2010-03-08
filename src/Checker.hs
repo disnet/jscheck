@@ -20,25 +20,36 @@ typecheck k b (e:es) = if (k == (typeName e))
                        else typecheck k b es
 
 -- helper function that allow us to iterate over statements and sub-statements 
--- 
-statementCheck (v:vs) (y:ys) en = case y of
+-- btw, todo(huascar) instead of passing (x:xs) i should pass one variable called a2, since it is the annotationCheck that one handles the array.
+statementCheck a2 (v:vs) (y:ys) en = case y of
     Stmt (StmtPos p s) -> case s of 
         ExprStmt (AssignE (CondE (AExpr (AEUExpr (PostFix (LeftExpr (CallExpr (CallPrim (MemberCall me e))))))))) -> case me of
             MemPrimExpr (Ident id) -> if v==id
-                                      then typecheck id e en && if null ys 
-                                                                then True
-                                                                else statementCheck vs ys en
+                                      then annotationCheck id e a2 en && if null ys 
+                                                                         then True
+                                                                         else statementCheck a2 vs ys en
                                       else True
             _ -> True 
         ReturnStmt (Just (AssignE (CondE (AExpr (AEUExpr (PostFix (LeftExpr (CallExpr (CallPrim (MemberCall me e)))))))))) -> case me of
             MemPrimExpr (Ident id) -> if v==id
-                                      then typecheck id e en && if null ys
-                                                                then True
-                                                                else statementCheck vs ys en
+                                      then annotationCheck id e a2 en && if null ys
+                                                                         then True
+                                                                         else statementCheck a2 vs ys en
                                       else True
         _ -> True    
+     
 
-                      
+-- id is the arg, b is the method, e:es is the environment, x:xs is the annotations  
+-- this will replace (typecheck id e en) calls... nothing else 
+-- if we don't find the annotation or the type, then it is like saying dont check type, therefore the return value should be True
+annotationCheck :: String -> String -> [TypeAnnotation] -> [XType] -> Bool
+annotationCheck id b (x:xs) env = case x of -- id: arg, b: method, x:xs typeAnnotation list, env: environment
+        TypeAnnotation typ arg -> if arg==id 
+                                  then typecheck typ b env
+                                  else if null xs
+                                       then True
+                                       else annotationCheck id b xs env
+        
 class CheckC t where
   check :: t -> [XType] -> Bool
 
@@ -67,12 +78,14 @@ instance CheckC MemberExpr where
                                 _ -> True
   check (MemPrimExpr p) env  = case p of 
                                 PEFuncDecl e -> case e of
-                                     FuncDecl (Just a1) a2 v y -> statementCheck v y env
+                                     FuncDecl (Just a1) a2 v y -> if null a2 -- todo(Huascar) I am here
+                                                                  then True 
+                                                                  else statementCheck a2 v y env -- v-> arguments, y-> statements
                                      _ -> True
                                 _ -> True
                                                   
   check (ArrayExpr me e) env  = True
-  check (MemberNew me e) env  = True
+  check (MemberNew me e) env  = True 
 
       
 instance CheckC Expr where
@@ -110,6 +123,10 @@ parse_now :: [Char] -> ([SourceElement] -> Result) -> Result
 parse_now p f = case parseProgram p of
                       Right r -> f r
                       Left l -> Error "Ouch, a type violation was found."
+
+-- Right [Stmt (StmtPos (1,1) (ExprStmt (AssignE (CondE (AExpr (AEUExpr (PostFix (LeftExpr (CallExpr (CallPrim (MemPrimExpr (PEFuncDecl (FuncDecl (Just "") [] ["a"] [Stmt (StmtPos (1,13) (ExprStmt (AssignE (CondE (AExpr (AEUExpr (PostFix (LeftExpr (CallExpr (CallPrim (MemberCall (MemPrimExpr (Ident "a")) "bark")))))))))))])))))))))))))]                      
+-- Right [Stmt (StmtPos (1,1) (ExprStmt (AssignE (CondE (AExpr (AEUExpr (PostFix (LeftExpr (CallExpr (CallPrim (MemPrimExpr (PEFuncDecl (FuncDecl (Just "") [TypeAnnotation "dog" "a"] ["a"] [Stmt (StmtPos (1,25) (ExprStmt (AssignE (CondE (AExpr (AEUExpr (PostFix (LeftExpr (CallExpr (CallPrim (MemberCall (MemPrimExpr (Ident "a")) "bark")))))))))))])))))))))))))]
+
                       
 -- todo(huascar) contact Tim and ask him about the annotations that would be used
 -- to indicate types. are we gonna use them?

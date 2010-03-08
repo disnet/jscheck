@@ -33,6 +33,8 @@ main = defaultMain tests
 tests = [
         testGroup "Basic Tests" [
           testCase "simple" test_simple,
+          testCase "checker" test_single_arg_function, 
+          testCase "checker with two arg function" test_two_arg_function,
           testCase "extractor"  extract_single_method,
           testCase "extractor with two methods" extract_two_methods,
           testCase "extractor run on dog file" extract_dog_file,
@@ -51,6 +53,16 @@ parse_fail p f = case parseProgram p of
 -- Right [Stmt (StmtPos (1,1) (VarStmt [VarDecl "x" Nothing])),Stmt (StmtPos (1,6) EmptyStmt)]
 test_simple = parse_fail "var x;" (\p -> check' (head p))
 
+test_single_arg_function = parse_fail "//#@type Dog a function(a){a.boo;};"(\p -> 
+        let r = (check (head p)[XType {typeName="Dog", typeFields=["boo", "arrrg"]}, XType {typeName="Cat", typeFields=["wal", "tal"]}]) in
+            do
+              assertBool "typecheck has passed" (r == True))
+              
+test_two_arg_function = parse_fail "//#@type Dog a @type Cat b function(a, b){a.boo;b.wal;};"(\p -> 
+        let r = (check (head p)[XType {typeName="Dog", typeFields=["boo", "arrrg"]}, XType {typeName="Cat", typeFields=["wal", "tal"]}]) in
+            do
+              assertBool "typecheck has passed" (r == True))
+              
 extract_single_method = parse_fail "Foo.prototype.bar = function(a) {return 0;};" (\p ->
     let xtype = head (runExtractor p) in
         do 
