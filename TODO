@@ -1,0 +1,5 @@
+* checker right now only works for fields, not methods
+* checker only works if function being checked is on the first line of the program
+* checker only works if a single method is being called. Chokes on serial composition (and perhaps other constructs like return statements?)
+* oddness going on with newlines...seems to work fine with the js scripts read in from testfiles but not if \n is put in a string literal (the is probably just a haskell oddness, don't need to solve)
+

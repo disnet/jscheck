@@ -1,3 +1,9 @@
+//# @type Dog dog 
+function getSaying(dog) { 
+  dog.bark;
+  dog.meow;
+}
+
 function Dog(name) {
   this.name = name;
 }
@@ -8,11 +14,6 @@ Dog.prototype.getName = function() {
 
 Dog.prototype.bark = function() {
   return "Arf!";
-}
-
-//# @type Dog dog
-function getSaying(dog) {
-  return dog.getName() + ":" + dog.meow();
 }
 
 var mydog = new Dog("Spot");

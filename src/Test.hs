@@ -38,8 +38,11 @@ tests = [
           testCase "extractor"  extract_single_method,
           testCase "extractor with two methods" extract_two_methods,
           testCase "extractor run on dog file" extract_dog_file,
-          testCase "extractor and checker run on good dog file" extract_check_good_dog_file,
-          testCase "extractor and checker run on bad dog file" extract_check_bad_dog_file
+          testCase "check good file" check_good_file,
+          testCase "check bad file with function on top and accessing one fields" check_bad_file_top_fields,
+          testCase "check bad file with function on top and accessing two fields" check_bad_file_two_top_fields,
+          testCase "check bad file with function on bottom and accessing fields" check_bad_file_bottom_fields,
+          testCase "check bad file with function on bottom and accessing methods" check_bad_file_bottom_methods
 
 --          testCase "extractor with two methods and extra stmts" extract_two_methods_with_extra_stmts -- TODO: test is known to fail, we're just going to accept that for now
         ]
@@ -62,7 +65,14 @@ test_two_arg_function = parse_fail "//#@type Dog a @type Cat b function(a, b){a.
         let r = (check (head p)[XType {typeName="Dog", typeFields=["boo", "arrrg"]}, XType {typeName="Cat", typeFields=["wal", "tal"]}]) in
             do
               assertBool "typecheck has passed" (r == True))
+
+{-}
+test_foo = parse_fail "//#@type Dog dog function getSaying(dog) { dog.meow();}"(\p -> 
+        let r = (check (head p)[XType {typeName="Dog", typeFields=["boo", "arrrg"]}, XType {typeName="Cat", typeFields=["wal", "tal"]}]) in
+            do
+              assertBool "typecheck has passed" (r == True))
               
+              -}
 extract_single_method = parse_fail "Foo.prototype.bar = function(a) {return 0;};" (\p ->
     let xtype = head (runExtractor p) in
         do 
@@ -79,7 +89,7 @@ extract_two_methods = parse_fail prog (\p ->
   where prog = "Foo.prototype.bar = function(a) {return 0;}; Foo.prototype.baz = function() {};"
 
 extract_dog_file = do
-  s <- readFile "testfiles/two_methods_and_caller.js"
+  s <- readFile "testfiles/bottom_methods_good.js"
   parse_fail s (\p -> let xtype = head (runExtractor p) in
                   do
                     assertEqual "there should have been a dog type" "Dog" (typeName xtype)
@@ -96,15 +106,32 @@ extract_two_methods_with_extra_stmts = parse_fail prog (\p ->
   where prog = "Foo.prototype.bar = function(a) {return 0;}; function extra(a,b) {}; Foo.prototype.baz = function() {};"
 
 
-extract_check_good_dog_file = do
-  s <- readFile "testfiles/two_methods_and_caller.js"
+check_good_file = do
+  s <- readFile "testfiles/bottom_methods_good.js"
   parse_fail s (\p -> if check (head p) (runExtractor p)
                         then assertBool "passed correctly" True 
                         else assertFailure "should have passed for known good file")
     
-extract_check_bad_dog_file = do
-  s <- readFile "testfiles/two_methods_and_caller_fail.js"
+check_bad_file_top_fields = do
+  s <- readFile "testfiles/top_fields_fail.js"
+  parse_fail s (\p -> if check (head p) (runExtractor p)
+                        then assertFailure "should have failed the type check" 
+                        else assertBool "passed correctly" True)
+
+check_bad_file_two_top_fields = do
+  s <- readFile "testfiles/two_top_fields_fail.js"
   parse_fail s (\p -> if check (head p) (runExtractor p)
                         then assertFailure "should have failed the type check" 
                         else assertBool "passed correctly" True)
     
+check_bad_file_bottom_fields = do
+  s <- readFile "testfiles/bottom_fields_fail.js"
+  parse_fail s (\p -> if check (head p) (runExtractor p)
+                        then assertFailure "should have failed the type check" 
+                        else assertBool "passed correctly" True)
+
+check_bad_file_bottom_methods = do
+  s <- readFile "testfiles/bottom_methods_fail.js"
+  parse_fail s (\p -> if check (head p) (runExtractor p)
+                        then assertFailure "should have failed the type check" 
+                        else assertBool "passed correctly" True)
