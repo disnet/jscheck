@@ -57,12 +57,12 @@ parse_fail p f = case parseProgram p of
 test_simple = parse_fail "var x;" (\p -> check' (head p))
 
 test_single_arg_function = parse_fail "//#@type Dog a function(a){a.boo;};"(\p -> 
-        let r = (check (head p)[XType {typeName="Dog", typeFields=["boo", "arrrg"]}, XType {typeName="Cat", typeFields=["wal", "tal"]}]) in
+        let r = (check_now p [XType {typeName="Dog", typeFields=["boo", "arrrg"]}, XType {typeName="Cat", typeFields=["wal", "tal"]}]) in
             do
               assertBool "typecheck has passed" (r == True))
               
 test_two_arg_function = parse_fail "//#@type Dog a @type Cat b function(a, b){a.boo;b.wal;};"(\p -> 
-        let r = (check (head p)[XType {typeName="Dog", typeFields=["boo", "arrrg"]}, XType {typeName="Cat", typeFields=["wal", "tal"]}]) in
+        let r = (check_now p [XType {typeName="Dog", typeFields=["boo", "arrrg"]}, XType {typeName="Cat", typeFields=["wal", "tal"]}]) in
             do
               assertBool "typecheck has passed" (r == True))
 
@@ -108,30 +108,30 @@ extract_two_methods_with_extra_stmts = parse_fail prog (\p ->
 
 check_good_file = do
   s <- readFile "testfiles/bottom_methods_good.js"
-  parse_fail s (\p -> if check (head p) (runExtractor p)
+  parse_fail s (\p -> if check(head p) (runExtractor p)
                         then assertBool "passed correctly" True 
                         else assertFailure "should have passed for known good file")
     
 check_bad_file_top_fields = do
   s <- readFile "testfiles/top_fields_fail.js"
-  parse_fail s (\p -> if check (head p) (runExtractor p)
+  parse_fail s (\p -> if check_now p (runExtractor p)
                         then assertFailure "should have failed the type check" 
                         else assertBool "passed correctly" True)
 
 check_bad_file_two_top_fields = do
   s <- readFile "testfiles/two_top_fields_fail.js"
-  parse_fail s (\p -> if check (head p) (runExtractor p)
+  parse_fail s (\p -> if check_now p (runExtractor p)
                         then assertFailure "should have failed the type check" 
                         else assertBool "passed correctly" True)
     
 check_bad_file_bottom_fields = do
   s <- readFile "testfiles/bottom_fields_fail.js"
-  parse_fail s (\p -> if check (head p) (runExtractor p)
+  parse_fail s (\p -> if check_now p (runExtractor p)
                         then assertFailure "should have failed the type check" 
                         else assertBool "passed correctly" True)
 
 check_bad_file_bottom_methods = do
   s <- readFile "testfiles/bottom_methods_fail.js"
-  parse_fail s (\p -> if check (head p) (runExtractor p)
+  parse_fail s (\p -> if check_now p (runExtractor p)
                         then assertFailure "should have failed the type check" 
                         else assertBool "passed correctly" True)

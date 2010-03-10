@@ -23,20 +23,41 @@ typecheck k b (e:es) = if (k == (typeName e))
 -- btw, todo(huascar) instead of passing (x:xs) i should pass one variable called a2, since it is the annotationCheck that one handles the array.
 statementCheck a2 (v:vs) (y:ys) en = case y of
     Stmt (StmtPos p s) -> case s of 
+        ExprStmt (AssignE (CondE (AExpr (AEUExpr (PostFix (LeftExpr (CallExpr (CallMember (MemberCall me e) [])))))))) -> case me of
+            MemPrimExpr (Ident id) -> if v==id
+                                      then annotationCheck id e a2 en && if null ys
+                                                                         then True
+                                                                         else if null vs 
+                                                                              then statementCheck a2 [v] ys en
+                                                                              else statementCheck a2 vs ys en
+                                      else True
         ExprStmt (AssignE (CondE (AExpr (AEUExpr (PostFix (LeftExpr (CallExpr (CallPrim (MemberCall me e))))))))) -> case me of
             MemPrimExpr (Ident id) -> if v==id
                                       then annotationCheck id e a2 en && if null ys 
                                                                          then True
-                                                                         else statementCheck a2 vs ys en
+                                                                         else if null vs 
+                                                                              then statementCheck a2 [v] ys en -- I think the problem is with vs, i.e., if there is only one param, the should pass v instead of vs...if there are more, then we should pass vs....this is the error.
+                                                                              else statementCheck a2 vs ys en
                                       else True
             _ -> True 
         ReturnStmt (Just (AssignE (CondE (AExpr (AEUExpr (PostFix (LeftExpr (CallExpr (CallPrim (MemberCall me e)))))))))) -> case me of
             MemPrimExpr (Ident id) -> if v==id
                                       then annotationCheck id e a2 en && if null ys
                                                                          then True
-                                                                         else statementCheck a2 vs ys en
+                                                                         else if null vs 
+                                                                              then statementCheck a2 [v] ys en
+                                                                              else statementCheck a2 vs ys en
                                       else True
-        _ -> True    
+        ReturnStmt (Just (AssignE (CondE (AExpr (AEUExpr (PostFix (LeftExpr (CallExpr (CallMember (MemberCall me e)[]))))))))) -> case me of
+            MemPrimExpr (Ident id) -> if v==id
+                                      then annotationCheck id e a2 en && if null ys
+                                                                         then True
+                                                                         else if null vs 
+                                                                              then statementCheck a2 [v] ys en
+                                                                              else statementCheck a2 vs ys en
+                                      else True           
+        _ -> True
+     -- here
      
 
 -- id is the arg, b is the method, e:es is the environment, x:xs is the annotations  
@@ -132,7 +153,15 @@ parse_now p f = case parseProgram p of
 -- to indicate types. are we gonna use them?
 -- todo(Huascar) it seems that the extractor gets run after the check was executed. hmmm, this is bad.
 -- sample data -- [XType {typeName="a", typeFields=["boo", "arrrg"]}, XType {typeName="b", typeFields=["wal", "tal"]}]
+
+check_now :: [SourceElement] -> [XType] -> Bool
+check_now [] []    = True
+check_now (x:[]) a = check x a
+check_now (x:xs) a = (check x a) && (check_now xs a)
+--check_now a []     = True 
+
+--[XType {typeName="Dog", typeFields=["boo", "arrrg"]}, XType {typeName="Cat", typeFields=["wal", "tal"]}]
 runChecker input  = parse_now input (\p -> 
-        if (check (head p)(runExtractor p))
-          then Good "good stuff"
-          else Warning "bad stuff")
+        if (check_now p (runExtractor p))
+        then Good "good stuff"
+        else Warning "bad stuff")
