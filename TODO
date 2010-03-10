@@ -1,6 +1,7 @@
 * checker right now only works for fields, not methods
 * checker only works if function being checked is on the first line of the program
 * checker only works if a single method is being called. Chokes on serial composition (and perhaps other constructs like return statements?)
+* checker could print out line where check fails?
 
 * extractor probably only works if prototype modification happends on the top level (probably fine?)
 * extractor will do some odd stuff if we modify the "this" prototype (should we just special case not adding anything for this?)
