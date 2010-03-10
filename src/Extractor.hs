@@ -11,13 +11,13 @@ class ExtractC t where
 
 instance ExtractC SourceElement where
   extract (Stmt s) c = extract s c
---  extract (FuncDecl fd) = extract fd
+  extract (SEFuncDecl fd) c = c
 
 
 instance ExtractC MemberExpr where
---  extract (MemPrimExpr p) = extract p
---  extract (ArrayExpr me e) = []
---  extract (MemberNew me e) = []
+  extract (MemPrimExpr p) c = c
+  extract (ArrayExpr me e) c = c
+  extract (MemberNew me e) c = c
   extract (MemberCall me e) c = 
     case me of
       MemberCall me "prototype" -> case me of
@@ -56,7 +56,7 @@ instance ExtractC LeftExpr where
 
 instance ExtractC CallExpr where
   extract (CallPrim p) c = extract p c
- -- extract (CallMember m args)
+  extract (CallMember m args) c = c
 
 instance ExtractC Stmt' where
   extract (ExprStmt p) c = extract p c
