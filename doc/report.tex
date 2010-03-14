@@ -1,0 +1,61 @@
+\documentclass{article}
+\usepackage{listings}
+
+\usepackage{float}
+ 
+\floatstyle{ruled}
+\newfloat{program}{thp}{lop}
+\floatname{program}{Snippet}
+
+
+\begin{document}
+
+\title{Project Report - Limited Static Type Checking for JavaScript}
+\author{Huascar A. Sanchez \and Tim Disney}
+
+\maketitle
+
+\lstset{showstringspaces=false}
+
+\section{Overview}
+
+\begin{program}
+\begin{verbatim}
+/** @type {Foo} */
+function Foo() {
+   // ...
+}
+
+Foo.prototype.sayHello = function() {
+    return "hello";
+}
+
+/** @param {Foo} f this paramater can say hello and goodbye */
+function aCoolFunction(f) {
+    f.sayHello();
+    f.sayGoodbye(); // compiler should give a warning that this function is not defined
+}
+
+var myFoo = new Foo();
+
+aCoolFunction(myFoo);
+\end{verbatim}
+\caption{Type Checking}
+\end{program}
+
+\section{Related Work}
+
+Tom and Caitlin did this \cite{fwjsStruct}.
+
+The $JS_0$ guy did this \cite{typeinferenceforjavascriptEcoop} and this \cite{typecheckingforjavascript}.
+
+The Ruby guy did this \cite{typecheckingruby}.
+
+Google has the closure compiler \cite{closureCompiler}.
+
+\bibliographystyle{abbrv}
+\bibliography{report}
+
+\end{document}
+
+
