@@ -17,28 +17,46 @@
 
 \lstset{showstringspaces=false}
 
-\section{Overview}
+\section{Introduction}
+It is well known that in the construction of software it is generally 
+cheaper to catch programming errors earlier in the development cycle \cite{cc2}.
+Static type checking is one method for catching errors during compile time
+but many languages such as JavaScript are dynamically typed and so discovery
+of certain type of errors is deferred until runtime.
 
+Our project was an implementation of a static type checker for JavaScript which
+checked properties on object's prototype. We call our implementation JSCheck.
+
+Our implementation is both unsound and incomplete. One thing that sets our 
+implementation apart for previous work is that our checker works (in a limited fashion) for
+full JavaScript.
+
+\section{Implementation}
+JSCheck was implemented in Haskell. Used the HJS library to provide full
+parsing of JavaScript (ECMAScript 3rd edition plus some additions from JavaScript 1.5)
+
+We extract the types and check them on methods that have type annotations.
 \begin{program}
 \begin{verbatim}
-/** @type {Foo} */
-function Foo() {
-   // ...
+function Dog() {
+  //..
 }
 
-Foo.prototype.sayHello = function() {
-    return "hello";
+Dog.prototype.getName = function(){
+  //..
 }
 
-/** @param {Foo} f this paramater can say hello and goodbye */
-function aCoolFunction(f) {
-    f.sayHello();
-    f.sayGoodbye(); // compiler should give a warning that this function is not defined
+Dog.prototype.bark = function(){
+  //..
 }
 
-var myFoo = new Foo();
+//# @tyep Dog fido
+function useDog(fido) {
+  fido.bark();
+}
 
-aCoolFunction(myFoo);
+var d = new Dog();
+useDog(d);
 \end{verbatim}
 \caption{Type Checking}
 \end{program}
@@ -52,6 +70,8 @@ The $JS_0$ guy did this \cite{typeinferenceforjavascriptEcoop} and this \cite{ty
 The Ruby guy did this \cite{typecheckingruby}.
 
 Google has the closure compiler \cite{closureCompiler}.
+
+\section{Conclusion}
 
 \bibliographystyle{abbrv}
 \bibliography{report}
