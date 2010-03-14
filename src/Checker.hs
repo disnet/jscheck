@@ -38,7 +38,7 @@ statementCheck a2 (v:vs) (y:ys) en = case y of
                                       else True
         ExprStmt (AssignE (CondE (AExpr (AEUExpr (PostFix (LeftExpr (CallExpr (CallPrim (MemberCall me e))))))))) -> case me of
             MemPrimExpr (Ident id) -> if v==id
-                                      then annotationCheck id e a2 en && if null ys 
+                                      then annotationCheck id e a2 en && if null ys -- promptLocation (annotationCheck id e a2 en && if null ys...)  ... means that is the whole if-then-else block
                                                                          then True
                                                                          else if null vs 
                                                                               then statementCheck a2 [v] ys en
@@ -47,7 +47,7 @@ statementCheck a2 (v:vs) (y:ys) en = case y of
             _ -> True 
         ReturnStmt (Just (AssignE (CondE (AExpr (AEUExpr (PostFix (LeftExpr (CallExpr (CallPrim (MemberCall me e)))))))))) -> case me of
             MemPrimExpr (Ident id) -> if v==id
-                                      then annotationCheck id e a2 en && if null ys
+                                      then annotationCheck id e a2 en && if null ys -- promptLocation (annotationCheck id e a2 en && if null ys...)  ... means that is the whole if-then-else block
                                                                          then True
                                                                          else if null vs 
                                                                               then statementCheck a2 [v] ys en
@@ -55,7 +55,7 @@ statementCheck a2 (v:vs) (y:ys) en = case y of
                                       else True
         ReturnStmt (Just (AssignE (CondE (AExpr (AEUExpr (PostFix (LeftExpr (CallExpr (CallMember (MemberCall me e)[]))))))))) -> case me of
             MemPrimExpr (Ident id) -> if v==id
-                                      then annotationCheck id e a2 en && if null ys
+                                      then annotationCheck id e a2 en && if null ys -- promptLocation (annotationCheck id e a2 en && if null ys...)  ... means that is the whole if-then-else block
                                                                          then True
                                                                          else if null vs 
                                                                               then statementCheck a2 [v] ys en
@@ -75,10 +75,12 @@ annotationCheck id b (x:xs) env = case x of
                                        else annotationCheck id b xs env
 
                                        
-                                       
+-- get the checkers' returned value, print it, then return the value back to the caller.
+-- this way, every check will be recorded, and then printed. 
 -- promptLocation ans location = do
 --     let out = if ans then "Ok: " ++ toString (location) else "Type Error: " ++ toString(location)
 --     print out
+--     return ans
     
 
 class CheckC t where
