@@ -20,26 +20,33 @@
 \section{Introduction}
 It is well known that in the construction of software it is generally 
 cheaper to catch programming errors earlier in the development cycle \cite{cc2}.
-Static type checking is one method for catching errors during compile time
-but many languages such as JavaScript are dynamically typed and so discovery
-of certain type of errors is deferred until runtime.
+Static type checking is one such method for catching errors early during compile time.
+However, there are many popular languages such as JavaScript which are dynamically 
+typed. This mans that discovery of certain types of errors must be deferred until runtime.
 
-Our project was an implementation of a static type checker for JavaScript which
-checked properties on object's prototype. We call our implementation JSCheck.
+Our project was an exploration in adding static type checking to JavaScript. Due to 
+the dynamic nature of JavaScript any static checking must necessarily be limited. 
+However, we felt that there is value in being able to do some limited incomplete
+checking rather than no static checking at all. The topic also held promise for us as a learning
+opportunity on static checking.
 
-Our implementation is both unsound and incomplete. One thing that sets our 
-implementation apart for previous work is that our checker works (in a limited fashion) for
-full JavaScript.
+We created an implementation of a static type checker for JavaScript prototype 
+based objects called JSCheck. In the following sections we will give an overview
+of how JavaScript deals with types and the annotations we add to JavaScript to enable
+typing (\ref{sec:types}), our implementation of the
+checker (\ref{sec:implementation}), some related work (\ref{sec:related}) and 
+conclusion (\ref{sec:conclusion}).
 
-\section{Implementation}
-JSCheck was implemented in Haskell. Used the HJS library to provide full
-parsing of JavaScript (ECMAScript 3rd edition plus some additions from JavaScript 1.5)
+\section{Types in JavaScript}
+\label{sec:types}
+User defied types in JavaScript can be written in a variety of styles. The style
+that we have focused on for the scope of this project was constructor functions and
+adding fields to the type's prototype.
 
-We extract the types and check them on methods that have type annotations.
 \begin{program}
 \begin{verbatim}
-function Dog() {
-  //..
+function Dog(){
+  // ..
 }
 
 Dog.prototype.getName = function(){
@@ -49,8 +56,28 @@ Dog.prototype.getName = function(){
 Dog.prototype.bark = function(){
   //..
 }
+\end{verbatim}
+\caption{Checking Types in JavaScript}
+\label{fig:object}
+\end{program}
 
-//# @tyep Dog fido
+In the JavaScript code snippet (\ref{fig:object}) we define a {\tt Dog} type
+which has two methods, {\tt getName} and {\tt bark} which are added to the {\tt Dog}
+prototype.
+
+There are other ways of creating objects including using object literal notation
+or assigning methods directly to fields of the object but these techniques of 
+object creation are not included in the scope what JSCheck will recognize.
+
+To enable JSCheck to check type usages we add the comment type annotation
+format to the JavaScript language as seen in snippet \ref{fig:check}. In
+this example the {\tt fido} parameter has been annotated with the {\tt Dog}
+type in the {\tt //\#} comment. JSCheck will then check that all usages of
+the {\tt fido} parameter conforms to the definition of the {\tt Dog} type.
+
+\begin{program}
+\begin{verbatim}
+//# @type Dog fido
 function useDog(fido) {
   fido.bark();
 }
@@ -59,9 +86,38 @@ var d = new Dog();
 useDog(d);
 \end{verbatim}
 \caption{Type Checking}
+\label{fig:check}
 \end{program}
 
+\section{Implementation}
+\label{sec:implementation}
+JSCheck is implemented in Haskell. We were originally considering defining a 
+subset of JavaScript to easy the burden of creating a parser for JavaScript. 
+However we found a Haskell library called HJS \cite{hjsLibrary} 
+which already implements a full parser for JavaScript (ECMAScript 3rd edition plus 
+some additions from JavaScript 1.5). We had to make a few modifications to
+HJS in order to pick up the type annotations but but this was a huge win
+in terms of effort for features.
+
+As seen in figure \ref{fig:FIXME} In general terms JSCheck works by taking in a JavaScript source file and running
+a modified version of the HJS parser over it. This produces a abstract syntax tree
+that is fed into a type extractor function which finds all the JavaScript object types that
+has been defined in the source. The output of this function is a list of types (type names and all associated fields)
+which is fed into a type checker function along with the original AST. The
+checker function find all functions that have been annotated with our special
+type comments and checks all usages of parameters against the extracted types. 
+If there are any usages of unknown fields the checker fails with a warning that
+the source could not be checked.
+
+Because of the dynamic nature of JavaScript our implementation is both unsound 
+and incomplete. It is unsound because methods could be add to the object at
+runtime so even though the checker sees a usage of an unknown field that field
+actually could be defined. It is incomplete because fields could also be removed
+from an object at runtime. The JavaScript program could be accessing non existent 
+fields even though the checker thought they were there.
+
 \section{Related Work}
+\label{sec:related}
 
 Tom and Caitlin did this \cite{fwjsStruct}.
 
@@ -71,7 +127,13 @@ The Ruby guy did this \cite{typecheckingruby}.
 
 Google has the closure compiler \cite{closureCompiler}.
 
+One thing that sets our 
+implementation apart for previous work is that our checker works (in a limited fashion) for
+full JavaScript.
+
 \section{Conclusion}
+\label{sec:conclusion}
+Full source can be found at {\tt http://github.com/disnet/jscheck}.
 
 \bibliographystyle{abbrv}
 \bibliography{report}
