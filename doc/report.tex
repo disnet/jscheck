@@ -18,42 +18,39 @@
 \lstset{showstringspaces=false}
 
 \section{Introduction}
-It is well known that in the construction of software it is generally cheaper to 
-catch programming errors earlier in the development cycle \cite{cc2}. One method 
-of catching these errors is static type checking. As we all know with static type 
-checking, the type consistency of your code will be checked before the program is 
-run. In other words, if there are any type violation in your code the the type 
-checker will catch it. 
+In the construction of software it is generally cheaper to 
+catch programming errors earlier in the development cycle. One common method 
+to catch errors is static type checking. This will
+check the type consistency of the program before it is even
+run. If the code has any type violations the type checker will 
+find it and alert the programmer.
 
-For example, invoking a method on an object that does not support it will be easily 
-detected in strongly typed languages like Java. The compiler will immediately 
-complain and will prevent the program from running. However, in languages like 
-JavaScript, this type of error will be overlooked and deffered until runtime.
+For example, in strongly typed languages like Java it is impossible 
+to invoke a method which has not been defined for a class (unless reflection is used).
+The compiler will immediately 
+complain and prevent the program from compiling. However, in languages like 
+JavaScript, this kind of error will not be discovered until runtime.
 
-Enabling static type checking in a language as dynamic as JavaScript is a 
-challenge. Especially since types can be modified at runtime. Given this constraint, 
-we implemented a static type checker, called JSCheck, for prototype based objects 
-in JavaScript. The scope of our checker was limited to properties on objects' 
-prototype. In other words, we are completely ignoring type checking of things 
-like strings and numbers. The whole idea, as Lucas Cardelli said \cite{typesystems}, 
-is to prevent the occurance of execution errors during the running of your program. 
+Adding static type checking to a dynamic language like JavaScript is a 
+challenge, especially since objects can be modified at runtime. Given this challenge, 
+we have implemented a static type checker, called JSCheck, for user-defined objects 
+in JavaScript. The scope of JSCheck is limited to properties on an object's
+prototype. In other words, we are completely ignoring type checking of the built in types
+such as strings and numbers. The whole idea, as Lucas Cardelli said \cite{typesystems}, 
+is to prevent the occurrence of errors during program execution. 
 
-Our implementation is both unsound and incomplete. One thing that sets our 
-implementation apart for previous work is that our checker works (in a limited 
-fashion) for full JavaScript.
-
-The rest of this paper is divided as follows. The implementation section will discuss 
-any design and implementation choices that were made throughout the development 
-of this static type checker. A collection of snippets is provided to show our checker 
-in action. Our findings and conclusions will be discussed in the last section of 
-this paper.
+The rest of this paper is divided as follows. Section (\ref{sec:types}) gives an overview
+of how user-defined types work in JavaScript, section (\ref{sec:implementation}) 
+will discuss the design and implementation choices that were made through the development 
+of JSCheck, related work will be discussed in (\ref{sec:related}), and future work
+and conclusions in (\ref{sec:future}) and (\ref{sec:conclusion}).
 
 
 \section{Types in JavaScript}
 \label{sec:types}
-User defied types in JavaScript can be written in a variety of styles. The style
-that we have focused on for the scope of this project was constructor functions and
-adding fields to the type's prototype.
+User-defined types in JavaScript can be written in a variety of styles and forms. The form
+that we considered in the scope of this project is object creation using 
+constructor functions and prototype modification.
 
 \begin{program}
 \begin{verbatim}
@@ -68,21 +65,24 @@ Dog.prototype.getName = function(){
 Dog.prototype.bark = function(){
   //..
 }
+
+var mydog = new Dog();
 \end{verbatim}
 \caption{Checking Types in JavaScript}
 \label{fig:object}
 \end{program}
 
-In the JavaScript code snippet (\ref{fig:object}) we define a {\tt Dog} type
+For example, in code snippet (\ref{fig:object}) we define a {\tt Dog} type
 which has two methods, {\tt getName} and {\tt bark} which are added to the {\tt Dog}
-prototype.
+prototype. New ``instances'' of the {\tt Dog} type can be created with the {\tt new}
+keyword.
 
 There are other ways of creating objects including using object literal notation
-or assigning methods directly to fields of the object but these techniques of 
-object creation are not included in the scope what JSCheck will recognize.
+and assigning methods directly to fields of an object but these techniques of 
+object creation are not included in the scope JSCheck.
 
-To enable JSCheck to check type usages we add the comment type annotation
-format to the JavaScript language as seen in snippet \ref{fig:check}. In
+To enable JSCheck to check the usages of an object we add the comment type annotation
+to the JavaScript language as seen in snippet \ref{fig:check}. In
 this example the {\tt fido} parameter has been annotated with the {\tt Dog}
 type in the {\tt //\#} comment. JSCheck will then check that all usages of
 the {\tt fido} parameter conforms to the definition of the {\tt Dog} type.
@@ -94,8 +94,8 @@ function useDog(fido) {
   fido.bark();
 }
 
-var d = new Dog();
-useDog(d);
+var mydog = new Dog();
+useDog(mydog);
 \end{verbatim}
 \caption{Type Checking}
 \label{fig:check}
@@ -105,12 +105,12 @@ useDog(d);
 \section{Implementation}
 \label{sec:implementation}
 JSCheck is implemented in Haskell. We were originally considering defining a 
-subset of JavaScript to easy the burden of creating a parser for JavaScript. 
+subset of JavaScript to ease the burden of creating a parser for JavaScript. 
 However we found a Haskell library called HJS \cite{hjsLibrary} 
-which already implements a full parser for JavaScript (ECMAScript 3rd edition plus 
-some additions from JavaScript 1.5). We had to make a few modifications to
-HJS in order to pick up the type annotations but but this was a huge win
-in terms of effort for features.
+which implements a full parser for JavaScript (ECMAScript 3rd edition plus 
+some additions from JavaScript 1.5). We needed to make a few modifications to
+HJS in order to pick up the type annotations but this greatly simplified much of
+the effort in the implementation of JSCheck.
 
 As seen in figure \ref{fig:jscheckway} In general terms JSCheck works by taking in a JavaScript source file and running
 a modified version of the HJS parser over it. This produces a abstract syntax tree
@@ -159,6 +159,7 @@ type violation occurred, the name of the function, and a suggestion for how to f
 
 
 \section{Related Work}
+\label{sec:related}
 We are not the first ones who have tried to implement static type checking for JavaScript.
 There have been others who have done it before us. Some of them include:
 
@@ -180,17 +181,24 @@ However, the most important one, for us, was that JavaScript is the most used
 language in the World Wide Web and providing this type checking capability would
 be appreciated by many. 
 
+Our implementation is both unsound and incomplete. One thing that sets our 
+implementation apart for previous work is that our checker works (in a limited 
+fashion) for full JavaScript.
+
+One thing that sets our 
+implementation apart for previous work is that our checker works (in a limited fashion) for
+full JavaScript.
+
 \section{Future Work}
+\label{sec:future}
 There are several areas in our static type checker that could be expanded. One of
 them, as indicated above, is the type checking output. Future will be focused on 
 providing a more descriptive type checking output. Another extension could be to
 provide type consistency checks for other elements of the language, like strings
 and numbers.
 
+%TODO: talk about other forms of object creation
 
-One thing that sets our 
-implementation apart for previous work is that our checker works (in a limited fashion) for
-full JavaScript.
 
 \section{Conclusion}
 \label{sec:conclusion}
