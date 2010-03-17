@@ -112,50 +112,34 @@ some additions from JavaScript 1.5). We needed to make a few modifications to
 HJS in order to pick up the type annotations but this greatly simplified much of
 the effort in the implementation of JSCheck.
 
-As seen in figure \ref{fig:jscheckway} In general terms JSCheck works by taking in a JavaScript source file and running
-a modified version of the HJS parser over it. This produces a abstract syntax tree
-that is fed into a type extractor function which finds all the JavaScript object types that
-has been defined in the source. The output of this function is a list of types (type names and all associated fields)
-which is fed into a type checker function along with the original AST. The
-checker function find all functions that have been annotated with our special
-type comments and checks all usages of parameters against the extracted types. 
-If there are any usages of unknown fields the checker fails with a warning that
-the source could not be checked.
-
-Because of the dynamic nature of JavaScript our implementation is both unsound 
-and incomplete. It is unsound because methods could be add to the object at
-runtime so even though the checker sees a usage of an unknown field that field
-actually could be defined. It is incomplete because fields could also be removed
-from an object at runtime. The JavaScript program could be accessing non existent 
-fields even though the checker thought they were there.
-
-Unless you explicity type annotate your functions, JScheck does not have the means 
-for type checking them. The way our checker works is very straightforward. It a
-three-steps process (see Figure ~\ref{fig:jscheckway}). First, it takes some JavaScript 
-code and parses it. The output is an Abstract Syntax Tree (AST). Second, given this AST, 
-it extracts all the possible types found in your code. The output is what we know 
-as the environment. The environment is the place where type names are mapped to 
-their available type fields. Third, the environment and the AST are then fed to 
-a built-in type checking process. Here is where any type consistency will be checked 
-and, if there are any, type consistency violations will be communicated to the 
-developer. 
+Figure \ref{fig:jscheckway} shows in general terms how JSCheck works. JSCheck takes 
+in a JavaScript source file and runs
+it through a modified version of the HJS parser. This produces an abstract syntax tree
+which is then fed into a type extractor function which finds all the JavaScript 
+object types that
+have been defined. The output of this function is a list of types 
+(type name and all associated fields)
+which is given to a type checker function along with the original AST. The
+checker function finds all functions that have been annotated with our special
+type comments and checks all usages of typed parameters against the extracted types.
+The final 
+output will be a boolean representing if the code is well-typed or not. 
 
 \begin{figure}[here]
   \begin{center}
-    \includegraphics[scale=0.5]{blockdiagram.png}
+    \includegraphics[scale=0.4]{blockdiagram.png}
   \end{center}
   \caption{Type Checking - the JSCheck way}
   \label{fig:jscheckway}
 \end{figure}
 \pagebreak
 
-
-
-As could see in the above figure, after the code has been parsed, the JScheck will 
-extract the types and check them on functions that have type annotations. The final 
-output will be either your code is well-typed or not (represented as a boolean value). 
-We plan on changing this output to a more descriptive one (i.e., including where the
-type violation occurred, the name of the function, and a suggestion for how to fix it). 
+Because of the dynamic nature of JavaScript our implementation is both unsound 
+and incomplete. It is unsound because methods could be added to the object at
+runtime. So, even though the checker may find a usage of an unknown field, that field
+might actually be defined. It is incomplete because fields could also be removed
+from an object at runtime. The JavaScript program could be accessing non-existent 
+fields even though the checker thought they were there.
 
 
 \section{Related Work}
