@@ -1,6 +1,6 @@
 \documentclass{article}
 \usepackage{listings}
-
+\usepackage{graphicx}
 \usepackage{float}
  
 \floatstyle{ruled}
@@ -18,24 +18,36 @@
 \lstset{showstringspaces=false}
 
 \section{Introduction}
-It is well known that in the construction of software it is generally 
-cheaper to catch programming errors earlier in the development cycle \cite{cc2}.
-Static type checking is one such method for catching errors early during compile time.
-However, there are many popular languages such as JavaScript which are dynamically 
-typed. This mans that discovery of certain types of errors must be deferred until runtime.
+It is well known that in the construction of software it is generally cheaper to 
+catch programming errors earlier in the development cycle \cite{cc2}. One method 
+of catching these errors is static type checking. As we all know with static type 
+checking, the type consistency of your code will be checked before the program is 
+run. In other words, if there are any type violation in your code the the type 
+checker will catch it. 
 
-Our project was an exploration in adding static type checking to JavaScript. Due to 
-the dynamic nature of JavaScript any static checking must necessarily be limited. 
-However, we felt that there is value in being able to do some limited incomplete
-checking rather than no static checking at all. The topic also held promise for us as a learning
-opportunity on static checking.
+For example, invoking a method on an object that does not support it will be easily 
+detected in strongly typed languages like Java. The compiler will immediately 
+complain and will prevent the program from running. However, in languages like 
+JavaScript, this type of error will be overlooked and deffered until runtime.
 
-We created an implementation of a static type checker for JavaScript prototype 
-based objects called JSCheck. In the following sections we will give an overview
-of how JavaScript deals with types and the annotations we add to JavaScript to enable
-typing (\ref{sec:types}), our implementation of the
-checker (\ref{sec:implementation}), some related work (\ref{sec:related}) and 
-conclusion (\ref{sec:conclusion}).
+Enabling static type checking in a language as dynamic as JavaScript is a 
+challenge. Especially since types can be modified at runtime. Given this constraint, 
+we implemented a static type checker, called JSCheck, for prototype based objects 
+in JavaScript. The scope of our checker was limited to properties on objects' 
+prototype. In other words, we are completely ignoring type checking of things 
+like strings and numbers. The whole idea, as Lucas Cardelli said \cite{typesystems}, 
+is to prevent the occurance of execution errors during the running of your program. 
+
+Our implementation is both unsound and incomplete. One thing that sets our 
+implementation apart for previous work is that our checker works (in a limited 
+fashion) for full JavaScript.
+
+The rest of this paper is divided as follows. The implementation section will discuss 
+any design and implementation choices that were made throughout the development 
+of this static type checker. A collection of snippets is provided to show our checker 
+in action. Our findings and conclusions will be discussed in the last section of 
+this paper.
+
 
 \section{Types in JavaScript}
 \label{sec:types}
@@ -89,6 +101,7 @@ useDog(d);
 \label{fig:check}
 \end{program}
 
+
 \section{Implementation}
 \label{sec:implementation}
 JSCheck is implemented in Haskell. We were originally considering defining a 
@@ -99,7 +112,7 @@ some additions from JavaScript 1.5). We had to make a few modifications to
 HJS in order to pick up the type annotations but but this was a huge win
 in terms of effort for features.
 
-As seen in figure \ref{fig:FIXME} In general terms JSCheck works by taking in a JavaScript source file and running
+As seen in figure \ref{fig:jscheckway} In general terms JSCheck works by taking in a JavaScript source file and running
 a modified version of the HJS parser over it. This produces a abstract syntax tree
 that is fed into a type extractor function which finds all the JavaScript object types that
 has been defined in the source. The output of this function is a list of types (type names and all associated fields)
@@ -116,16 +129,64 @@ actually could be defined. It is incomplete because fields could also be removed
 from an object at runtime. The JavaScript program could be accessing non existent 
 fields even though the checker thought they were there.
 
+Unless you explicity type annotate your functions, JScheck does not have the means 
+for type checking them. The way our checker works is very straightforward. It a
+three-steps process (see Figure ~\ref{fig:jscheckway}). First, it takes some JavaScript 
+code and parses it. The output is an Abstract Syntax Tree (AST). Second, given this AST, 
+it extracts all the possible types found in your code. The output is what we know 
+as the environment. The environment is the place where type names are mapped to 
+their available type fields. Third, the environment and the AST are then fed to 
+a built-in type checking process. Here is where any type consistency will be checked 
+and, if there are any, type consistency violations will be communicated to the 
+developer. 
+
+\begin{figure}[here]
+  \begin{center}
+    \includegraphics[scale=0.5]{blockdiagram.png}
+  \end{center}
+  \caption{Type Checking - the JSCheck way}
+  \label{fig:jscheckway}
+\end{figure}
+\pagebreak
+
+
+
+As could see in the above figure, after the code has been parsed, the JScheck will 
+extract the types and check them on functions that have type annotations. The final 
+output will be either your code is well-typed or not (represented as a boolean value). 
+We plan on changing this output to a more descriptive one (i.e., including where the
+type violation occurred, the name of the function, and a suggestion for how to fix it). 
+
+
 \section{Related Work}
-\label{sec:related}
+We are not the first ones who have tried to implement static type checking for JavaScript.
+There have been others who have done it before us. Some of them include:
 
-Tom and Caitlin did this \cite{fwjsStruct}.
+\begin{description}
+  \item[Tom Austin and Caitlin Sadowski] \hfill \\ 
+  developed a structural type-checker for Javascript \cite{fwjsStruct}.
+  \item[$JS_0$ team] \hfill \\ 
+  developed a formalism for an object based language called JSO, which includes features of JavaScript 
+  \cite{typeinferenceforjavascriptEcoop,typecheckingforjavascript}. 
+  \item[DRuby team] \hfill \\ 
+  developed Diamondback Ruby (DRuby), a tool that blends Ruby's dynamic type 
+  system with a static typing discipline \cite{typecheckingruby}.
+  \item[Google] developed the Closure compiler \cite{closureCompiler}.  
+\end{description}
 
-The $JS_0$ guy did this \cite{typeinferenceforjavascriptEcoop} and this \cite{typecheckingforjavascript}.
+In some way, which remains obscure, we all shared the same drive for making type 
+checking possible in a dynamic language. We chose JavaScript for many reasons. 
+However, the most important one, for us, was that JavaScript is the most used 
+language in the World Wide Web and providing this type checking capability would
+be appreciated by many. 
 
-The Ruby guy did this \cite{typecheckingruby}.
+\section{Future Work}
+There are several areas in our static type checker that could be expanded. One of
+them, as indicated above, is the type checking output. Future will be focused on 
+providing a more descriptive type checking output. Another extension could be to
+provide type consistency checks for other elements of the language, like strings
+and numbers.
 
-Google has the closure compiler \cite{closureCompiler}.
 
 One thing that sets our 
 implementation apart for previous work is that our checker works (in a limited fashion) for
@@ -133,6 +194,15 @@ full JavaScript.
 
 \section{Conclusion}
 \label{sec:conclusion}
+We have developed a static type checker for prototype based objects in JavaScript
+called JSCheck. By using this checker any developer will be able to catch any 
+type errors before running their programs. The only thing the developer needs to
+do is to explicitly type annotate a function(s). The rest is done by JSCheck. 
+
+The idea of implementing a type checker strongly motivated us. It is hard for us 
+describe the feeling of accomplishment after completing our implementation. Now,
+for sure, we have a better understanding of what static type checking is all about. 
+
 Full source can be found at {\tt http://github.com/disnet/jscheck}.
 
 \bibliographystyle{abbrv}
