@@ -1,1 +1,16 @@
-This project is intended to bring some sort of static type checking to the javascript world.
+To run JSCheck you will need a working haskell environment. It has been tested
+on Haskell 6.10.4 but it probably works on earlier version as well.
+
+To Install:
+In the jscheck root directory run:
+$ cabal install
+
+(you might need to install dependancies if cabal doesn't do it for you)
+
+Cabal will install jscheck to ~/.cabal/bin.
+
+To run:
+$ ~/.cabal/bin/jscheck "<program source>"
+
+To test:
+$ ~/.cabal/bin/test-jscheck
