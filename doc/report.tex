@@ -42,7 +42,7 @@ The rest of this paper is divided as follows. Section (\ref{sec:types}) gives an
 of how user-defined types work in JavaScript, section (\ref{sec:implementation}) 
 will discuss the design and implementation choices that were made through the development 
 of JSCheck, related work will be discussed in (\ref{sec:related}), and future work
-and conclusions in (\ref{sec:future}) and (\ref{sec:conclusion}).
+and conclusions in Sections (\ref{sec:future}) and (\ref{sec:conclusion}).
 
 
 \section{Types in JavaScript}
@@ -79,7 +79,7 @@ keyword.
 
 There are other ways of creating objects including using object literal notation
 and assigning methods directly to fields of an existing object. Due to time constraints,
-we opted for not including them as part of the scope of JSCheck.
+we opted to not include them in the scope of JSCheck.
 
 To enable JSCheck to check the usages of an object we added the comment type annotation
 to the JavaScript language as seen in Snippet \ref{fig:check}. In
@@ -155,7 +155,7 @@ they also only work for a JavaScript subset while JSCheck can parse full JavaScr
 
 There has also been work done adding static typing to other dynamic languages. Furr {\em et al.}
 \cite{typecheckingruby} created a tool called DRuby that adds static type inference to
-the Ruby language. They also do not use a languages subset and can check real Ruby code.
+the Ruby language. They also do not use a language subset and can check real Ruby code.
 
 Google has a tool for checking JavaScript called the Closure 
 compiler \cite{closureCompiler}. While this tool is mainly focused on minifying
