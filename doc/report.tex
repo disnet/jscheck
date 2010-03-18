@@ -23,13 +23,12 @@ catch programming errors earlier in the development cycle. One common method
 to catch errors is static type checking which can
 check the type consistency of the program before it is even
 run. If the code has any type violations the type checker will 
-find it and alert the programmer.
+find them and alert the programmer.
 
 For example, in strongly typed languages like Java it is impossible 
 to invoke a method which has not been defined for a class (unless reflection is used).
-The compiler will immediately 
-complain and prevent the program from compiling. However, in languages like 
-JavaScript, this kind of error will not be discovered until runtime.
+The compiler will immediately complain and prevent the program from compiling. However, 
+in languages like JavaScript, this kind of error will not be discovered until runtime.
 
 Adding static type checking to a dynamic language like JavaScript is a 
 challenge, especially since objects can be modified at runtime. Given this challenge, 
@@ -73,16 +72,16 @@ var mydog = new Dog();
 \end{program}
 \pagebreak
 
-For example, in Snippet \ref{fig:object} we define a {\tt Dog} type
+For example, in Snippet \ref{fig:object} we defined a {\tt Dog} type
 which has two methods, {\tt getName} and {\tt bark} which are added to the {\tt Dog}
 prototype. New ``instances'' of the {\tt Dog} type can be created with the {\tt new}
 keyword.
 
 There are other ways of creating objects including using object literal notation
-and assigning methods directly to fields of an existing object but these techniques of 
-object creation are not included in the scope JSCheck.
+and assigning methods directly to fields of an existing object. Due to time constraints,
+we opted for not including them as part of the scope of JSCheck.
 
-To enable JSCheck to check the usages of an object we add the comment type annotation
+To enable JSCheck to check the usages of an object we added the comment type annotation
 to the JavaScript language as seen in Snippet \ref{fig:check}. In
 this example the {\tt fido} parameter has been annotated with the {\tt Dog}
 type in the {\tt //\#} comment. JSCheck will then check that all usages of
@@ -110,13 +109,13 @@ subset of JavaScript to ease the burden of creating a parser for JavaScript.
 However we found a Haskell library called HJS \cite{hjsLibrary} 
 which implements a full parser for JavaScript (ECMAScript 3rd edition plus 
 some additions from JavaScript 1.5). We needed to make a few modifications to
-HJS in order to pick up the type annotations but this greatly simplified much of
+HJS in order to pick up the type annotations. This greatly simplified much of
 the implementation effort of JSCheck.
 
 Figure \ref{fig:jscheckway} shows in general terms how JSCheck works. JSCheck takes 
 in a JavaScript source file and runs
 it through a modified version of the HJS parser. This produces an abstract syntax tree
-which is then fed into a type extractor function which finds all the JavaScript 
+(AST) which is then fed into a type extractor function which finds all the JavaScript 
 object types that
 have been defined. The output of this function is a list of types 
 (type name and all associated fields)
@@ -145,7 +144,7 @@ fields even though the checker thought they were there.
 
 \section{Related Work}
 \label{sec:related}
-There has been other work done to add various forms of static type checking to dynamic
+Other work has been done to add various forms of static type checking to dynamic
 languages like JavaScript. Anderson {\em et al.}
 \cite{typeinferenceforjavascriptEcoop, typecheckingforjavascript} had a series of papers
 on adding type inference and type checking to a JavaScript subset called $JS_0$. Austin
@@ -165,7 +164,7 @@ annotations in comments which is similar to what JSCheck uses.
 
 \section{Future Work}
 \label{sec:future}
-There are several areas that JSCheck could be expanded. The messages that are displayed
+There are several areas where JSCheck could be expanded. The messages that are displayed
 to the user are currently very primitive. JSCheck will only display ``True'' if the
 input code is well-typed or ``False'' if it is ill-typed. For this to be a truly useful tool
 it would be highly desirable to display the line numbers where type errors were found.
@@ -175,7 +174,7 @@ only constructor function and prototype modification are supported but many othe
 are in common use.
 
 Other future work could include extending the type consistency checks for other elements 
-of the language, such as usages of built types such as strings and numbers.
+of the language, such as usages of built in types such as strings and numbers.
 
 \section{Conclusion}
 \label{sec:conclusion}
