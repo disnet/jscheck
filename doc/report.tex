@@ -36,7 +36,7 @@ challenge, especially since objects can be modified at runtime. Given this chall
 we have implemented a static type checker, called JSCheck, for user-defined objects 
 in JavaScript. The scope of JSCheck is limited to properties on an object's
 prototype. In other words, we are completely ignoring type checking of the built in types
-such as strings and numbers. The whole idea, as Lucas Cardelli said \cite{typesystems}, 
+such as strings and numbers. The whole idea, as Luca Cardelli said \cite{typesystems}, 
 is to prevent the occurrence of errors during program execution. 
 
 The rest of this paper is divided as follows. Section (\ref{sec:types}) gives an overview
@@ -52,7 +52,7 @@ User-defined types in JavaScript can be written in a variety of styles and forms
 that we considered in the scope of this project is object creation using 
 constructor functions and prototype modification.
 
-\begin{program}
+\begin{program}[here]
 \begin{verbatim}
 function Dog(){
   // ..
@@ -71,8 +71,9 @@ var mydog = new Dog();
 \caption{Checking Types in JavaScript}
 \label{fig:object}
 \end{program}
+\pagebreak
 
-For example, in code snippet (\ref{fig:object}) we define a {\tt Dog} type
+For example, in Snippet \ref{fig:object} we define a {\tt Dog} type
 which has two methods, {\tt getName} and {\tt bark} which are added to the {\tt Dog}
 prototype. New ``instances'' of the {\tt Dog} type can be created with the {\tt new}
 keyword.
@@ -82,12 +83,12 @@ and assigning methods directly to fields of an object but these techniques of
 object creation are not included in the scope JSCheck.
 
 To enable JSCheck to check the usages of an object we add the comment type annotation
-to the JavaScript language as seen in snippet \ref{fig:check}. In
+to the JavaScript language as seen in Snippet \ref{fig:check}. In
 this example the {\tt fido} parameter has been annotated with the {\tt Dog}
 type in the {\tt //\#} comment. JSCheck will then check that all usages of
 the {\tt fido} parameter conforms to the definition of the {\tt Dog} type.
 
-\begin{program}
+\begin{program}[here]
 \begin{verbatim}
 //# @type Dog fido
 function useDog(fido) {
@@ -100,7 +101,7 @@ useDog(mydog);
 \caption{Type Checking}
 \label{fig:check}
 \end{program}
-
+\pagebreak
 
 \section{Implementation}
 \label{sec:implementation}
@@ -156,7 +157,8 @@ There have been others who have done it before us. Some of them include:
   \item[DRuby team] \hfill \\ 
   developed Diamondback Ruby (DRuby), a tool that blends Ruby's dynamic type 
   system with a static typing discipline \cite{typecheckingruby}.
-  \item[Google] developed the Closure compiler \cite{closureCompiler}.  
+  \item[Google] \hfill \\ 
+  developed the Closure compiler \cite{closureCompiler}.  
 \end{description}
 
 In some way, which remains obscure, we all shared the same drive for making type 
@@ -165,13 +167,6 @@ However, the most important one, for us, was that JavaScript is the most used
 language in the World Wide Web and providing this type checking capability would
 be appreciated by many. 
 
-Our implementation is both unsound and incomplete. One thing that sets our 
-implementation apart for previous work is that our checker works (in a limited 
-fashion) for full JavaScript.
-
-One thing that sets our 
-implementation apart for previous work is that our checker works (in a limited fashion) for
-full JavaScript.
 
 \section{Future Work}
 \label{sec:future}
@@ -189,7 +184,9 @@ and numbers.
 We have developed a static type checker for prototype based objects in JavaScript
 called JSCheck. By using this checker any developer will be able to catch any 
 type errors before running their programs. The only thing the developer needs to
-do is to explicitly type annotate a function(s). The rest is done by JSCheck. 
+do is to explicitly type annotate a function(s). The rest is done by JSCheck. One 
+thing that sets our implementation apart for previous work is that our checker 
+works (in a limited fashion) for full JavaScript. 
 
 The idea of implementing a type checker strongly motivated us. It is hard for us 
 describe the feeling of accomplishment after completing our implementation. Now,
