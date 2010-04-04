@@ -17,6 +17,23 @@
 
 \lstset{showstringspaces=false}
 
+\begin{abstract}
+Implementations of static type checkers are available. However, they only worked
+for a subset of JavaScript. In this report we explored an alternative that could 
+parse full JavaScript code. We called this alternative JScheck. JScheck is a static 
+type checker for prototype-based objects in JavaScript. In other words, JSCheck will 
+completely ignored things like strings and numbers. 
+
+We study the type checking problem given the definitions studied in class. A set of
+changes were made to the HJS parsing library to recognize type annotations in 
+JavaScript code. Then, we implemented the major components of JScheck: Type Extractor
+and Type Checker. Both components complement each other. The Type Extractor is 
+responsible for finding all the JavaScript object types that have been defined. The 
+Type Checker is responsible for finding all functions that have been type annotated. 
+The result of these functions' invocation indicates if the JavaScript is well typed. 
+The main rationale is to prevent the occurrence of errors during program execution. 
+\end{abstract}
+
 \section{Introduction}
 In the construction of software it is generally cheaper to 
 catch programming errors earlier in the development cycle. One common method 
@@ -142,6 +159,95 @@ from an object at runtime. The JavaScript program could be accessing non-existen
 fields even though the checker thought they were there.
 
 
+\section{Testing of the JScheck}
+\label{sec:testing}
+
+JScheck went through an exhaustive testing, i.e., functional and unit testing. 
+To illustrate the type of code that can be reviewed by JScheck, we created a demo 
+page, which is found online at {\tt http://www.hsanchez.net/demo.html}. In this page, 
+there is some JavaScript code (See code \ref{fig:demo}) that will get executed every 
+time you refresh the browser. JScheck was utilized to determine, at compile time, if 
+this code was well-typed. The results showed this code was well-typed.
+
+\begin{program}
+\begin{verbatim}
+function Guitar(name, color) {
+  this.name = name;
+  this.color = color;
+  this.strings = ['E', 'A', 'D', 'G', 'B', 'e'];
+  this.price = 0;
+  this.currency = "USD"
+}
+
+Guitar.prototype.print = function() {
+   var cPrice    = this.price;
+   var cCurrency = this.currency;  
+   return '<br />' + 'This guitar is ' +
+   this.color +
+   ', it has ' + this.strings.length + ' strings' +
+   ' and it costs ' + cPrice + ' ' + cCurrency;
+}
+
+Guitar.prototype.tune = function(newStrings) {
+  this.strings = newStrings;
+}
+
+var myChords = new Array();
+myChords[0] = "DM7";
+myChords[1] = "DM9";
+myChords[2] = "DM4"; 
+Guitar.prototype.play = function() {
+  var randomnumber=Math.floor(Math.random()*3)
+  return myChords[randomnumber] + " chord was played.";
+}
+ 
+Guitar.prototype.update = function (newPrice, newCurrency) {
+  this.price    = newPrice;
+  this.currency = newCurrency;
+}
+
+Guitar.prototype.paint = function (newColor) {
+  this.color    = newColor;
+}
+
+
+//# @type Guitar guitar
+function describe(guitar) {
+  return guitar.print();
+}
+ 
+//# @type Guitar guitar
+function playTune(guitar){
+   return guitar.play();   
+}
+\end{verbatim}
+\caption{JavaScript code to be type-checked}
+\label{fig:demo}
+\end{program}
+\pagebreak
+
+
+The above JavaScript code, contained in a file called demo.js), was tested by running
+a function similar to the one in \ref{fig:functional}. This function takes our demo.js 
+file as an input, and then it parses it. The result of this parsing is an AST. This AST 
+is then fed to the checker and extractor functions. The result of these functions' invocation 
+will tell us whether the code in the demo.js is well-typed.
+
+
+\begin{program}
+\begin{verbatim}    
+check_demo_file = do
+  s <- readFile "testfiles/demo.js"
+  parse_fail s (\p -> if check_now p (runExtractor p)
+                        then assertFailure "should have failed the type check" 
+                        else assertBool "passed correctly" True)
+\end{verbatim}
+\caption{Type Checking of Demo.js}
+\label{fig:functional}
+\end{program}
+\pagebreak
+
+
 \section{Related Work}
 \label{sec:related}
 Other work has been done to add various forms of static type checking to dynamic
@@ -191,5 +297,6 @@ All source code for JSCheck is publicly available and can be found online at
 \bibliography{report}
 
 \end{document}
+
 
 
