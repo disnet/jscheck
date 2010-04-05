@@ -18,18 +18,17 @@
 \lstset{showstringspaces=false}
 
 \begin{abstract}
-Implementations of static type checkers are available. However, they only worked
-for a subset of JavaScript. In this report we explored an alternative that could 
-parse full JavaScript code. We called this alternative JScheck. JScheck is a static 
-type checker for prototype-based objects in JavaScript. In other words, JSCheck will 
-completely ignored things like strings and numbers. 
+Implementations of static type checkers are available. However, many only work
+for a subset of JavaScript. In this report we explore an alternative that can 
+parse full JavaScript code. We call this alternative JScheck. JScheck is a static 
+type checker for prototype-based objects in JavaScript.
 
 We study the type checking problem given the definitions studied in class. A set of
 changes were made to the HJS parsing library to recognize type annotations in 
-JavaScript code. Then, we implemented the major components of JScheck: Type Extractor
-and Type Checker. Both components complement each other. The Type Extractor is 
+JavaScript code. Then, we implemented the major components of JScheck: a type extractor
+and a type checker. Both components complement each other. The type extractor is 
 responsible for finding all the JavaScript object types that have been defined. The 
-Type Checker is responsible for finding all functions that have been type annotated. 
+type checker is responsible for finding all functions that have been type annotated. 
 The result of these functions' invocation indicates if the JavaScript is well typed. 
 The main rationale is to prevent the occurrence of errors during program execution. 
 \end{abstract}
@@ -159,15 +158,15 @@ from an object at runtime. The JavaScript program could be accessing non-existen
 fields even though the checker thought they were there.
 
 
-\section{Testing of the JScheck}
+\section{Testing JScheck}
 \label{sec:testing}
 
 JScheck went through an exhaustive testing, i.e., functional and unit testing. 
 To illustrate the type of code that can be reviewed by JScheck, we created a demo 
 page, which is found online at {\tt http://www.hsanchez.net/demo.html}. In this page, 
 there is some JavaScript code (See code \ref{fig:demo}) that will get executed every 
-time you refresh the browser. JScheck was utilized to determine, at compile time, if 
-this code was well-typed. The results showed this code was well-typed.
+time you refresh the browser. This demo code was run though JScheck which confirmed, 
+at compile time, that this code is well-typed.
 
 \begin{program}
 \begin{verbatim}
@@ -227,7 +226,7 @@ function playTune(guitar){
 \pagebreak
 
 
-The above JavaScript code, contained in a file called demo.js), was tested by running
+The above JavaScript code, contained in a file called demo.js, was tested by running
 a function similar to the one in \ref{fig:functional}. This function takes our demo.js 
 file as an input, and then it parses it. The result of this parsing is an AST. This AST 
 is then fed to the checker and extractor functions. The result of these functions' invocation 
