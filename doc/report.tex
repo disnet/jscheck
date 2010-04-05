@@ -238,8 +238,8 @@ will tell us whether the code in the demo.js is well-typed.
 check_demo_file = do
   s <- readFile "testfiles/demo.js"
   parse_fail s (\p -> if check_now p (runExtractor p)
-                        then assertFailure "should have failed the type check" 
-                        else assertBool "passed correctly" True)
+            then assertFailure "should have failed the type check" 
+            else assertBool "passed correctly" True)
 \end{verbatim}
 \caption{Type Checking of Demo.js}
 \label{fig:functional}
